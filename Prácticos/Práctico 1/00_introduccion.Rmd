@@ -110,7 +110,7 @@ class: clear
 
 **1d.** Comente brevemente las medidas de media y mediana. ¿En qué situaciones estas medidas difieren de forma relevante?
 
-**Nota** Los datos de la tabla se pueden leer desde [aquí](https://raw.githubusercontent.com/paulapereda/Econometria/master/data/gasto_mensual_vivienda.csv) en caso de querer trabajarlos desde .mono[R].
+**Nota** Los datos de la tabla se pueden leer desde [aquí](https://raw.githubusercontent.com/paulapereda/econometrics_I_21/master/Pr%C3%A1cticos/Pr%C3%A1ctico%201/gasto_mensual_vivienda.csv). Los datos pueden leerse desde el URL sin necesidad de descarga.
 
 ## Problema 2
 
