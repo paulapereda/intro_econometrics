@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Set de problemas 1</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Econometría I" />
+    <link href="00_introduccion_files/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="00_introduccion_files/remark-css-0.0.1/metropolis.css" rel="stylesheet" />
+    <link href="00_introduccion_files/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="my-css.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Set de problemas 1
+## Repaso e introducción a R
+### Econometría I
+### <br>A entregar el sábado 28 de agosto.
+
+---
+
+class: clear
+
+
+
+Se presenta el primer práctico de Econometría I. El mismo trata conceptos básicos de matemáticas, probabilidad, estadística y cálculo matricial. Se recomienda leer los apéndices A, B, C y D de _Jeffrey M. Wooldridge. Introductory Econometrics: A Modern Approach, 5th Edition_ y [los capítulos 2 y 3](https://www.econometrics-with-r.org/2-pt.html) de _Hanck, Arnold, Gerber y Schmelzer. Introduction to Econometrics with R_.
+
+.hi-pink[**Regla general de los prácticos:**] La entrega debe realizarse en un archivo .pdf realizado con cualquier programa de computadora (MS Word, Open Office, `\(\LaTeX\)` o letra a mano .hi-pink[prolija y legible]. 
+
+El archivo debe contener los apellidos de los integrantes del grupo y debe ser enviado al siguiente correo: .pink[ppereda@correo.um.edu.uy]. Esperar confirmación de recepción. Grupos de tres o menos integrantes.
+
+## Problema 1
+
+Considerando la siguiente tabla que contiene el gasto mensual en vivienda para 12 familias:
+
+| Familia | Gasto mensual en &lt;br&gt;vivienda (en U$S) |
+|---------|----------------------------------------|
+| 1       |                   300                  |
+| 2       |                   550                  |
+| 3       |                   350                  |
+| 4       |                  1100                  |
+| 5       |                   640                  |
+| 6       |                   480                  |
+| 7       |                   450                  |
+| 8       |                   700                  |
+| 9       |                   670                  |
+| 10      |                   600                  |
+| 11      |                  1900                  |
+| 12      |                  5200                  |
+
+**1a.** Encuentre el gasto mensual promedio y mediano.
+
+**1b.** Indique el rango intercuartílico, el desvío estándar y la varianza.
+
+**1c.** Suponga que la familia número 12 aumenta su gasto mensual en un 50%, pero los de todas las demás familias permanecen fijos. Calcule nuevamente los puntos anteriores. Se puede utilizar __.mono[mutate]__ junto a la función __.mono[if_else]__.
+
+---
+class: clear
+
+**1d.** Comente brevemente las medidas de media y mediana. ¿En qué situaciones estas medidas difieren de forma relevante?
+
+**Nota** Los datos de la tabla se pueden leer desde [aquí](https://raw.githubusercontent.com/paulapereda/Econometria/master/data/gasto_mensual_vivienda.csv) en caso de querer trabajarlos desde .mono[R].
+
+## Problema 2
+
+Sea `\(\bar{Y}\)` el promedio muestral de una variable aleatoria con media `\(\mu\)` y varianza `\(\sigma^{2}\)`. Considere dos estimadores alternativos de `\(\mu\)`: `\(W_{1}=\frac{n-1}{n} \cdot \bar{Y}\)` y `\(W_{2}=\frac{\bar{Y}}{2}\)`.
+
+**2a.** Demuestre que `\(W_1\)` y `\(W_2\)` son dos estimadores sesgados de `\(\mu\)` y encuentre sus sesgos. ¿Qué sucede con los sesgos a medida que `\(n \rightarrow \infty\)`?
+
+**2b.** Encuentre los límites de probabilidad de `\(W_1\)` y `\(W_2\)` (sugerencia: utilice las propiedades PLIM1 y PLIM2 del Wooldridge, apéndice C, para `\(W_1\)` observe que `\(\operatorname{plim}\left[\frac{n}{n-1}\right]=1\)`). ¿Son consistentes los estimadores?
+
+**2c.** Encuentre `\(\operatorname{Var}\left(W_{1}\right)\)` y `\(\operatorname{Var}\left(W_{2}\right)\)`.
+
+
+## Problema 3
+
+Suponga que en una universidad grande el promedio de calificaciones, `\(GPA\)` y de puntuaciones `\(SAT\)` están relacionados por la esperanza condicional `\(\mathrm{E}(\mathrm{GPA} / \mathrm{SAT})=0.7+0.001 \mathrm{SAT}\)`.
+
+**3a.** Encuentre la esperanza de `\(GPA\)` cuando `\(SAT = 800\)` y `\(\mathrm{E}(\mathrm{GPA} / \mathrm{SAT = 1400})\)`. Comente la diferencia.
+
+**3b.** Si el `\(SAT\)` promedio de los alumnos de esta universidad es 1100, ¿cuál es el `\(GPA\)`? (Sugerencia: aplique la propiedad CE4, Wooldridge apéndice B).
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "8.5:11",
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
