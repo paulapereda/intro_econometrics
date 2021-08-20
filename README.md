@@ -1,2 +1,2 @@
-# econometrics_I
+# Econometría I 
 Undergraduate "Introduction to Econometrics" Course – Universidad de Montevideo
