@@ -42,6 +42,7 @@ vignettes/*.pdf
 # R Environment Variables
 .Renviron
 
-# Entregas de alumnos
+# Entregas y notas de alumnos
 
 /Entregas/
+/Notas
