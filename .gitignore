@@ -45,5 +45,5 @@ vignettes/*.pdf
 # Entregas y notas de alumnos
 
 /Entregas/
-/Notas
-\Slides
+Notas/
+Slides/
