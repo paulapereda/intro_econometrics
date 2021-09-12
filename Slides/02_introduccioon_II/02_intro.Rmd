@@ -1,0 +1,569 @@
+---
+title: "Introducción a R (tidyverse)"
+subtitle: "Econometría I"
+author: "Paula Pereda Suárez (ppereda@correo.um.edu.uy)"
+date: "20 de agosto de 2021"
+output:
+  xaringan::moon_reader:
+    css: ['default', 'metropolis', 'metropolis-fonts', 'my-css.css']
+    # self_contained: true
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+class: inverse, middle
+
+```{r Setup, include = F}
+options(htmltools.dir.version = FALSE)
+library(pacman)
+p_load(ggplot2, ggthemes, ggforce, latex2exp, dplyr, magrittr, knitr)
+# Knitr options
+
+opts_chunk$set(
+  comment = ">",
+  fig.align = "center",
+  fig.height = 7,
+  fig.width = 10.5,
+  # dpi = 300,
+  # cache = T,
+  warning = F,
+  message = F
+)
+
+# A blank theme for ggplot
+theme_empty <- theme_bw() + theme(
+  line = element_blank(),
+  rect = element_blank(),
+  strip.text = element_blank(),
+  axis.text = element_blank(),
+  plot.title = element_blank(),
+  axis.title = element_blank(),
+  plot.margin = structure(c(0, 0, -.5, -1), unit = "lines", valid.unit = 3L, class = "unit"),
+  legend.position = "none"
+)
+theme_simple <- theme_bw() + theme(
+  line = element_blank(),
+  panel.grid = element_blank(),
+  rect = element_blank(),
+  strip.text = element_blank(),
+  axis.text.x = element_text(size = 14),
+  axis.text.y = element_blank(),
+  axis.ticks = element_blank(),
+  plot.title = element_blank(),
+  axis.title = element_blank(),
+  # plot.margin = structure(c(0, 0, -1, -1), unit = "lines", valid.unit = 3L, class = "unit"),
+  legend.position = "none"
+)
+theme_axes <- theme_empty + theme(
+  axis.title = element_text(size = 18),
+  plot.margin = structure(c(0, 0, 0.1, 0), unit = "lines", valid.unit = 3L, class = "unit"),
+)
+```
+
+```{R, colors, include = F}
+# Define pink color
+red_pink <- "#e64173"
+turquoise <- "#20B2AA"
+orange <- "#FFA500"
+red <- "#fb6107"
+blue <- "#2b59c3"
+green <- "#8bb174"
+grey_light <- "grey70"
+grey_mid <- "grey50"
+grey_dark <- "grey20"
+purple <- "#6A5ACD"
+```
+# Preliminares
+---
+# Repaso (momento cómodo, yey! 🥸)
+
+- ¿Qué es un .hi-pink[vector]? ¿Cuáles son los principales tres tipos? ¿Cómo se crean? ¿Qué funciones se le pueden aplican a un vector y para qué?
+
+
+--
+
+Un vector es un arreglo de una dimensión. En __.mono[R]__ existen tres clases principales de vectores y se crean con la función combine, __.mono[c()]__.
+ 
+- ¿Qué es una .hi-pink[matriz]? 
+
+
+--
+ 
+Una matriz es un arreglo de dos dimensiones en el que todos los elementos son del mismo tipo.
+La función __.mono[matrix()]__ permite crear la matriz de un vector especificando las dimensiones.
+
+¿Qué es un .hi-pink[data.frame]?
+
+--
+
+Un __.mono[data.frame()]__ es un objeto de dos dimensiones en __.mono[R]__. Puede verse como un arreglo de vectores de la misma dimensión, similar a una matriz. 
+
+La ventaja de un dataframe, es que a diferencia de una matriz, los vectores o columnas pueden ser de diferentes tipos.
+---
+# Repaso (2)
+
+- ¿Qué puedo emplear para .hi-pink[seleccionar elementos]?
+
+--
+
+En general, puedo seleccionar seleccionar posiciones de filas y columnas con [ , ].
+
+En el caso un __.mono[data.frame()]__ se puede usar el signo $.
+
+- ¿Cómo le puedo poner nombre a las columnas?
+
+--
+
+Para vectores: __.mono[names()]__
+Para matrices y data frames: __.mono[colnames()]__
+
+
+---
+# 📌 Recordatorio
+
+.center[
+<img src = "images/r_rollercoaster.png" width = "900">]
+
+---
+class: inverse, middle 
+
+# .mono[R] + [Aplicaciones]
+---
+# ¿Cómo vamos a trabajar? R Projects
+
+[R Studio Projects](https://support.rstudio.com/hc/en-us/articles/200526207-Using-Projects) permite crear .hi-pink[projects en un directorio dado en un lugar dado].
+
+- Beneficios: 
+     - No hay que especificar el directorio de trabajo
+     - Todo es "lindo y bien contenido"
+     - Podés abrir varios proyectos a la vez
+     - Agarra las cosas donde las dejaste (pestañas abiertas, ambiente, etcétera) cuando reabrís el proyecto
+
+.center[
+<img src = "images/cracked_setwd.png" width = "500">]
+
+---
+# R Projects + here 💖
+
+El objetivo del paquete __.mono[here]__ es facilitar la referenciación de archivos en flujos de trabajo orientados a proyectos. En contraste con el uso de __.mono[setwd()]__, que es frágil y depende de la forma en que organice sus archivos.
+
+__.mono[here]__ usa el directorio de nivel superior de un proyecto para crear fácilmente rutas de acceso a los archivos.
+
+.center[<img src = "images/here.png" width = "400">]
+
+
+---
+# ¿Qué son datos _tidy_?
+
+```{r, eval = FALSE}
+install.packages("tidyverse")
+library(tidyverse)
+```
+
+.center[
+<img src = "images/tidydata_1.jpeg" width = "800">]
+
+---
+# Como las familias...
+
+.center[
+<img src = "images/tidydata_2.jpeg" width = "900">]
+
+---
+# Comparación de "bancos de trabajo"
+
+.center[
+<img src = "images/tidydata_3.jpeg" width = "900">]
+
+---
+# ¡Más fácil para automatizar e iterar!
+
+.center[
+<img src = "images/tidydata_5.jpeg" width = "900">]
+
+---
+# Yendo al grano...
+
+3 reglas para datos .hi-pink[tidy]:
+
+    1) cada variable tiene su propia columna
+    2) cada observación tiene su propia fila
+    3) cada valor tiene su propia celda
+    
+  .center[
+<img src="images/tidy.png" width="800">]  
+---
+
+# Concepto clave: %>%
+
+El operador %>% funciona así:
+
+.hi-pink[f(x) es igual a x %>% f()]
+
+Se lee como entonces o después, es decir, permite leer de izquierda a derecha:
+
+```{r, eval = FALSE}
+mis_datos %>% 
+  hace_esta_cosa() %>% 
+  ahora_esta_otra() %>% 
+  y_una_mas()
+```
+
+```{r, eval = FALSE}
+resultado <- mis_datos %>% 
+  hace_esta_cosa() %>% 
+  ahora_esta_otra() %>% 
+  y_una_mas()
+```
+
+---
+# ¿Cómo leer archivos en R?
+
+.center[
+<img src="images/read.png" width="700">]
+
+---
+# Leer archivos (1): readr
+
+Sirve para leer de manera rápida y amigable .hi-pink[datos rectangulares (como csv, tsv, etcétera.)].
+
+
+```{r, eval = FALSE}
+install.packages('readr')
+library(readr)
+```
+
+- read_csv(): para leer archivos con coma (',') como separador
+ 
+- read_csv2(): para leer archivos con punto y coma (';') como separador
+ 
+- read_tsv(): para leer archivos con tabulador ('\t') como separador
+
+---
+# Leer archivos (2): readxl
+
+Hace más sencillo extraer datos de .mono[Excel] y leerlos en .mono[R]
+
+
+```{r, eval = FALSE}
+install.packages('readxl')
+library(readxl)
+```
+
+- read_xls: para leer archivos de extensión .xls
+ 
+- read_xlsx: para leer archivos de extensión .xlsx
+
+---
+# Leer archivos (3): haven
+
+Lee archivos de .mono[SPSS], .mono[SAS] y .mono[STATA].
+
+
+```{r, eval = FALSE}
+install.packages('haven')
+library(haven)
+```
+
+- read_sav
+ 
+- read_spss
+
+- read_dta (también se puede usar read.dta13 de la librería readstata13)
+
+---
+
+# Escribir archivos
+ 
+También con estas tres librerías se pueden guardar dataframes como archivos:
+
+- write_csv
+
+- write_dta
+
+---
+# Datos ejemplo: planeta feliz
+
+```{r}
+library(readr)
+datos <- read.csv("http://www.lock5stat.com/datasets3e/HappyPlanetIndex.csv")
+str(datos)
+```
+
+---
+
+Los datos tienen 11 variables:
+
+  - Region: 1 = Latin America, 2 = Western nations, 3 = Middle East, 4 = Sub-Saharan Africa, 5 = South Asia, 6 = East Asia, 7 = former Communist countries
+  - Happiness Scored on a 0-10 scale for average level of happiness (10 is happiest)
+  - LifeExpectancy Average life expectancy (in years)
+  - Footprint Ecological footprint - a measure of the (per capita) ecological impact
+  - HLY Happy Life Years - combines life expectancy with well-being
+  - HPI Happy Planet Index (0-100 scale)
+  - HPIRank HPI rank for the country
+  - GDPperCapita Gross Domestic Product (per capita)
+  - HDI Human Development Index
+  - Population Population (in millions)
+
+---
+# ¿Cómo ordenar variables? arrange
+
+```{r, eval = FALSE}
+mis_datos %>% 
+  arrange(variable)
+```
+
+Orden descendiente:
+
+```{r, eval = FALSE}
+mis_datos %>% 
+  arrange(-variable)
+
+mis_datos %>% 
+  arrange(desc(variable))
+```
+
+Para ordenar una variable y luego, la otra:
+
+```{r, eval = FALSE}
+mis_datos %>% 
+  arrange(variable_1, variable_2)
+```
+---
+
+# Ejemplo: arrange
+
+```{r, results = 'hide'}
+ascendente <- datos %>% 
+  arrange(Region)
+```
+
+```{r, echo = FALSE}
+head(ascendente)
+```
+
+---
+# Ejemplo (2): arrange
+
+```{r, results = 'hide'}
+descendente <- datos %>% 
+  arrange(- Region)
+```
+
+```{r, echo = FALSE}
+head(descendente)
+```
+
+---
+# Escogiendo variables: select
+
+Se queda con todas las filas pero retiene solo algunas variables (columnas)
+
+```{r, eval = FALSE}
+mis_datos %>% 
+    select(variable_1, variable_2)
+```
+
+Elimina variables:
+
+```{r, eval = FALSE}
+mis_datos %>% 
+    select(- variable_1, - variable_2)
+```
+
+---
+# Ejemplo: select
+
+```{r, results = 'hide'}
+feliz_chico <- datos %>%
+  select(Country, Region, Happiness)
+```
+
+```{r, echo = FALSE}
+head(feliz_chico)
+```
+
+---
+# Enfocándonos en ciertos casos: filter
+
+```{r, eval = FALSE}
+mis_datos %>% 
+  filter(una_expresion_logica)
+```
+
+.center[
+<img src="images/dplyr_filter.jpeg" width="800">]
+
+---
+# Comparación de elementos
+La comparación de elementos se realiza con los siguientes comandos:
+
+- .pink['>'] mayor a / .pink['<'] menor a
+- .pink['>='] mayor o igual / .pink['<='] menor o igual a
+- .pink['=='] igual a
+- .pink['!='] distinto de
+- .pink['%in%'] contenido en
+
+Este tipo de operaciones devuelven un vector lógico dependiendo si la condición se cumple o no.
+
+Que se cumplan dos condiciones:
+
+```{r, eval = FALSE}
+mis_datos %>% filter(una_expresion_logica & otra_expresion_logica)
+```
+
+Que se cumpla una u otra condición:
+
+```{r, eval = FALSE}
+mis_datos %>% filter(una_expresion_logica | otra_expresion_logica)
+```
+---
+# Ejemplo: filter
+
+```{r, results = 'hide'}
+feliz2 <- datos %>%
+  filter(Region == 2)
+```
+
+```{r, echo = FALSE}
+head(feliz2)
+```
+---
+# Ejemplo (2): filter
+
+```{r, results = 'hide'}
+feliz3 <- datos %>%
+   filter(Happiness > 7)
+```
+
+
+```{r, echo = FALSE}
+head(feliz3)
+```
+---
+
+# Arrange, filter & select
+
+.hi-pink[Recordatorio:] arrange, filter & select no alteran el dataset original (mis_datos)
+
+```{r, eval = FALSE}
+nuevos_datos <- viejos_datos %>%
+    filter(algunas_filas) %>% 
+    select(algunas_columnas) %>% 
+    arrange(por_variable)
+```
+
+Para alterar el dataset original:
+
+```{r, eval = FALSE}
+viejos_datos <- viejos_datos %>%
+    filter(algunas_filas) %>% 
+    select(algunas_columnas) %>% 
+    arrange(por_variable)
+```
+
+---
+# Creando nuevas variables: mutate
+
+```{r, eval = FALSE}
+mis_datos <- mis_datos %>%
+    mutate(variable = expresión)
+```
+.center[
+<img src="images/dplyr_mutate.png" width="600">]
+---
+# Ejemplo: mutate
+
+```{r, results = 'hide'}
+feliz <- datos %>%
+  mutate(TotalGDP = GDPperCapita * Population )
+```
+
+```{r, echo = FALSE}
+head(feliz)
+```
+
+---
+# Renombrando variables: rename
+
+```{r, eval = FALSE}
+mis_datos <- mis_datos %>%
+    rename(nuevo_nombre = viejo_nombre)
+```
+
+---
+# Ejemplo: rename
+
+```{r, results = 'hide'}
+datos_es <- datos %>%
+  rename(pais = Country,
+         felicidad = Happiness)
+```
+
+```{r, echo = FALSE}
+head(datos_es)
+```
+
+---
+# Resúmenes agrupados
+
+```{r, eval = FALSE}
+resumen <- mis_datos %>% 
+  group_by(variable_para_agrupar) %>% 
+  summarise(
+    mediana = median(variable),
+    media = mean(variable),
+    des_est = sd(variable))
+resumen
+```
+
+```{r, eval = FALSE}
+resumen <- mis_datos %>% 
+  group_by(variable_para_agrupar) %>% 
+  summarise(
+    mediana = median(variable, na.rm = T),
+    media = mean(variable, na.rm = T),
+    des_est = sd(variable, na.rm = T))
+resumen
+```
+
+---
+
+```{r, eval = FALSE}
+resumen <- mis_datos %>% 
+  group_by(variable_para_agrupar) %>% 
+  summarise(cuenta = n())
+resumen
+```
+---
+
+# Ejemplo: group & summarise
+
+```{r, results = 'hide'}
+resumen <- datos %>%
+  group_by(Region) %>%
+  summarise(AverageHappy = mean(Happiness))
+```
+
+```{r, echo = FALSE}
+head(resumen)
+```
+
+---
+# En resumen...
+
+1) .hi-pink[%>%]: agiliza el flujo de trabajo
+    
+2) .hi-pink[arrange]: ordena variables
+
+3) .hi-pink[select]: elige variables
+    
+4) .hi-pink[filter]: elige filas
+    
+5) .hi-pink[mutate]: crear nuevas variables
+    
+6) .hi-pink[rename]: renombra variables
+    
+7) .hi-pink[group_by and summarize]: crea resúmenes agrupados
+

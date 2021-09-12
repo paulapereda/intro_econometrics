@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Set de problemas 2</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Econometría I" />
+    <link href="01_MCO_files/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="01_MCO_files/remark-css-0.0.1/metropolis.css" rel="stylesheet" />
+    <link href="01_MCO_files/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="my-css.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Set de problemas 2
+## Introducción a Mínimos Cuadrados Ordinarios
+### Econometría I
+### <br>A entregar el miércoles 22 de setiembre
+
+---
+
+class: clear
+
+
+
+Se presenta el primer práctico de Econometría I. El mismo trata conceptos introductorios de Mínimos Cuadrados Ordinarios.
+
+.hi-pink[**Regla general de los prácticos:**] La entrega debe realizarse en un archivo .pdf realizado con cualquier programa de computadora (MS Word, Open Office, `\(\LaTeX\)` o letra a mano .hi-pink[prolija y legible]. A su vez, en caso de emplear __.mono[R]__, se debe enviar el archivo .R correspondiente.
+
+El nombre del archivo debe contener los **apellidos de los integrantes del grupo (únicamente)** y debe ser enviado al siguiente correo: .pink[ppereda@correo.um.edu.uy]. Esperar confirmación de recepción. Grupos de tres o menos integrantes.
+
+## Problema 1
+
+Se desea estimar una función de producción utilizando datos de 23 empresas mediante el método de mínimos cuadrados (MCO).  `\(Y_i\)` es el logaritmo del PBI, `\(X_{2i}\)` es el logaritmo del capital y `\(X_{3i}\)` es el logaritmo del trabajo.
+
+`$$Y_{i}=\beta_{1}+\beta_{2} X_{2 i}+\beta_{3} X_{3 i}+\varepsilon_{i}$$`
+
+Se tiene la siguiente información en forma de desvíos con respecto a la media:
+
+`$$\begin{array}{c}
+\sum_{i=1}^{23} x_{3 i}^{2}=12; \ \sum_{i=1}^{23} x_{2 i}^{2}=12; \ \sum_{i=1}^{23} y_{i}^{2}=10 \\
+\sum_{i=1}^{23} x_{3 i} * x_{2 i}=8; \ \sum_{i=1}^{23} y_{i} * x_{3 i}=10; \ \sum_{i=1}^{23} y_{i} * x_{2 i}=8
+\end{array}$$`
+
+en donde:
+
+`$$y_{i}=\left(Y_{i}-\bar{Y}\right) ; \ x_{2 i}=\left(X_{2 i}-\bar{X}_{2}\right); \ x_{3 i}=\left(X_{3 i}-\bar{X}_{3}\right)$$`
+
+**1a.** Estime los coeficientes `\(\beta_2\)`, `\(\beta_3\)` y sus errores estándar.
+
+**1b.** Interprete los resultados obtenidos y analice su significancia estadística.
+
+**1c.** Calcule el `\(R^2\)` y el `\(R^2\)` corregido. Comente los resultados obtenidos.
+
+
+## Problema 2
+
+Suponga que se dispone del siguiente modelo para estimar el valor de una casa:
+
+`$$y_{i}=\beta_{1}+\beta_{2} x_{i 2}+\beta_{3} x_{i 3}+\beta_{4} x_{i 3}^{2}+u_{i}$$`
+En donde `\(y\)` es el valor de la casa, `\(x_2\)` es una medida de tamaño de la casa y `\(x_3\)` representa la distancia de la casa al centro de la ciudad.
+
+---
+class: clear
+
+Se dispone de los siguientes datos:
+
+| `\(y\)` &lt;br&gt;(valor) | `\(x_2\)` &lt;br&gt;(tamaño) | `\(x_3\)`&lt;br&gt;(distancia) |
+|:------------:|:---------------:|:------------------:|
+|      345     |       1650      |         3.5        |
+|      238     |       1870      |         0.5        |
+|      452     |       2230      |         1.5        |
+|      422     |       1740      |         4.5        |
+|      328     |       1900      |         1.8        |
+|      375     |       2000      |         0.1        |
+|      660     |       3200      |         3.4        |
+|      466     |       1860      |         3.0        |
+|      290     |       1230      |         1.0        |
+
+**2a.** Escriba el modelo en forma matricial. Defina las siguientes matrices: `\(Y\)`, `\(\beta\)`, `\(X\)`, `\(X’\)`, `\((X’X)\)` y `\(X’Y\)`. 
+
+**2b.** Estime dicho modelo mediante el método de mínimos cuadrados ordinarios. Calcule la matriz de varianzas y covarianzas.
+
+**2c.** Interprete los coeficientes estimados.   
+
+**2d.** Estime los coeficientes utilizando .mono[R]. Adjunte la salida de .mono[R].
+
+## Problema 3
+
+Se considera un modelo de regresión lineal simple `\(y_i = \beta x_i + \mu_i\)`. Suponga se cumplen los supuestos del modelo de regresión lineal.
+
+Se pide:
+
+**3a.** Obtener un estimador de `\(\beta\)` como solución al problema de minimización de los cuadrados de los residuos. 
+
+**3b.** Obtener la esperanza y varianza del estimador indicando la aplicación de los supuestos.
+
+
+## Problema 4
+
+**4a.** Pruebe que la suma de cuadrados de residuos (SCR) asociada al estimador de mínimos cuadrados de `\(\beta\)` puede escribirse como `\(SCR=Y^{T} Y-\hat{Y}^{T} \hat{Y}\)`
+
+**4b.** Comente. Un investigador estimo un modelo de regresión lineal y el `\(R^2\)` fue - 0,32. ¿Es posible? ¿Hay un error en las cuentas?
+
+**4c.** Demuestre que `\(R^2\)` es el cuadrado del coeficiente de correlación entre la variable dependiente, `\(y\)` y su valor predicho, `\(\hat y\)`.
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "8.5:11",
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
