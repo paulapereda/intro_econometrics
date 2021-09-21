@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Introducción a R (tidyverse)</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Paula Pereda Suárez (ppereda@correo.um.edu.uy)" />
+    <link href="02_intro_files/remark-css/default.css" rel="stylesheet" />
+    <link href="02_intro_files/remark-css/metropolis.css" rel="stylesheet" />
+    <link href="02_intro_files/remark-css/metropolis-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="my-css.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Introducción a R (tidyverse)
+## Econometría I
+### Paula Pereda Suárez (<a href="mailto:ppereda@correo.um.edu.uy" class="email">ppereda@correo.um.edu.uy</a>)
+### 20 de agosto de 2021
+
+---
+
+class: inverse, middle
+
+
+
+
+# Preliminares
+---
+# Repaso (momento cómodo, yey! 🥸)
+
+- ¿Qué es un .hi-pink[vector]? ¿Cuáles son los principales tres tipos? ¿Cómo se crean? ¿Qué funciones se le pueden aplican a un vector y para qué?
+
+
+--
+
+Un vector es un arreglo de una dimensión. En __.mono[R]__ existen tres clases principales de vectores y se crean con la función combine, __.mono[c()]__.
+ 
+- ¿Qué es una .hi-pink[matriz]? 
+
+
+--
+ 
+Una matriz es un arreglo de dos dimensiones en el que todos los elementos son del mismo tipo.
+La función __.mono[matrix()]__ permite crear la matriz de un vector especificando las dimensiones.
+
+¿Qué es un .hi-pink[data.frame]?
+
+--
+
+Un __.mono[data.frame()]__ es un objeto de dos dimensiones en __.mono[R]__. Puede verse como un arreglo de vectores de la misma dimensión, similar a una matriz. 
+
+La ventaja de un dataframe, es que a diferencia de una matriz, los vectores o columnas pueden ser de diferentes tipos.
+---
+# Repaso (2)
+
+- ¿Qué puedo emplear para .hi-pink[seleccionar elementos]?
+
+--
+
+En general, puedo seleccionar seleccionar posiciones de filas y columnas con [ , ].
+
+En el caso un __.mono[data.frame()]__ se puede usar el signo $.
+
+- ¿Cómo le puedo poner nombre a las columnas?
+
+--
+
+Para vectores: __.mono[names()]__
+Para matrices y data frames: __.mono[colnames()]__
+
+
+---
+# 📌 Recordatorio
+
+.center[
+&lt;img src = "images/r_rollercoaster.png" width = "900"&gt;]
+
+---
+class: inverse, middle 
+
+# .mono[R] + [Aplicaciones]
+---
+# ¿Cómo vamos a trabajar? R Projects
+
+[R Studio Projects](https://support.rstudio.com/hc/en-us/articles/200526207-Using-Projects) permite crear .hi-pink[projects en un directorio dado en un lugar dado].
+
+- Beneficios: 
+     - No hay que especificar el directorio de trabajo
+     - Todo es "lindo y bien contenido"
+     - Podés abrir varios proyectos a la vez
+     - Agarra las cosas donde las dejaste (pestañas abiertas, ambiente, etcétera) cuando reabrís el proyecto
+
+.center[
+&lt;img src = "images/cracked_setwd.png" width = "500"&gt;]
+
+---
+# R Projects + here 💖
+
+El objetivo del paquete __.mono[here]__ es facilitar la referenciación de archivos en flujos de trabajo orientados a proyectos. En contraste con el uso de __.mono[setwd()]__, que es frágil y depende de la forma en que organice sus archivos.
+
+__.mono[here]__ usa el directorio de nivel superior de un proyecto para crear fácilmente rutas de acceso a los archivos.
+
+.center[&lt;img src = "images/here.png" width = "400"&gt;]
+
+
+---
+# ¿Qué son datos _tidy_?
+
+
+```r
+install.packages("tidyverse")
+library(tidyverse)
+```
+
+.center[
+&lt;img src = "images/tidydata_1.jpeg" width = "800"&gt;]
+
+---
+# Como las familias...
+
+.center[
+&lt;img src = "images/tidydata_2.jpeg" width = "900"&gt;]
+
+---
+# Comparación de "bancos de trabajo"
+
+.center[
+&lt;img src = "images/tidydata_3.jpeg" width = "900"&gt;]
+
+---
+# ¡Más fácil para automatizar e iterar!
+
+.center[
+&lt;img src = "images/tidydata_5.jpeg" width = "900"&gt;]
+
+---
+# Yendo al grano...
+
+3 reglas para datos .hi-pink[tidy]:
+
+    1) cada variable tiene su propia columna
+    2) cada observación tiene su propia fila
+    3) cada valor tiene su propia celda
+    
+  .center[
+&lt;img src="images/tidy.png" width="800"&gt;]  
+---
+
+# Concepto clave: %&gt;%
+
+El operador %&gt;% funciona así:
+
+.hi-pink[f(x) es igual a x %&gt;% f()]
+
+Se lee como entonces o después, es decir, permite leer de izquierda a derecha:
+
+
+```r
+mis_datos %&gt;% 
+  hace_esta_cosa() %&gt;% 
+  ahora_esta_otra() %&gt;% 
+  y_una_mas()
+```
+
+
+```r
+resultado &lt;- mis_datos %&gt;% 
+  hace_esta_cosa() %&gt;% 
+  ahora_esta_otra() %&gt;% 
+  y_una_mas()
+```
+
+---
+# ¿Cómo leer archivos en R?
+
+.center[
+&lt;img src="images/read.png" width="700"&gt;]
+
+---
+# Leer archivos (1): readr
+
+Sirve para leer de manera rápida y amigable .hi-pink[datos rectangulares (como csv, tsv, etcétera.)].
+
+
+
+```r
+install.packages('readr')
+library(readr)
+```
+
+- read_csv(): para leer archivos con coma (',') como separador
+ 
+- read_csv2(): para leer archivos con punto y coma (';') como separador
+ 
+- read_tsv(): para leer archivos con tabulador ('\t') como separador
+
+---
+# Leer archivos (2): readxl
+
+Hace más sencillo extraer datos de .mono[Excel] y leerlos en .mono[R]
+
+
+
+```r
+install.packages('readxl')
+library(readxl)
+```
+
+- read_xls: para leer archivos de extensión .xls
+ 
+- read_xlsx: para leer archivos de extensión .xlsx
+
+---
+# Leer archivos (3): haven
+
+Lee archivos de .mono[SPSS], .mono[SAS] y .mono[STATA].
+
+
+
+```r
+install.packages('haven')
+library(haven)
+```
+
+- read_sav
+ 
+- read_spss
+
+- read_dta (también se puede usar read.dta13 de la librería readstata13)
+
+---
+
+# Escribir archivos
+ 
+También con estas tres librerías se pueden guardar dataframes como archivos:
+
+- write_csv
+
+- write_dta
+
+---
+# Datos ejemplo: planeta feliz
+
+
+```r
+library(readr)
+datos &lt;- read.csv("http://www.lock5stat.com/datasets3e/HappyPlanetIndex.csv")
+str(datos)
+```
+
+```
+&gt; 'data.frame':	143 obs. of  11 variables:
+&gt;  $ Country       : chr  "Albania" "Algeria" "Angola" "Argentina" ...
+&gt;  $ Region        : int  7 3 4 1 7 2 2 7 5 7 ...
+&gt;  $ Happiness     : num  5.5 5.6 4.3 7.1 5 7.9 7.8 5.3 5.3 5.8 ...
+&gt;  $ LifeExpectancy: num  76.2 71.7 41.7 74.8 71.7 80.9 79.4 67.1 63.1 68.7 ...
+&gt;  $ Footprint     : num  2.2 1.7 0.9 2.5 1.4 7.8 5 2.2 0.6 3.9 ...
+&gt;  $ HLY           : num  41.7 40.1 17.8 53.4 36.1 63.7 61.9 35.4 33.1 40.1 ...
+&gt;  $ HPI           : num  47.9 51.2 26.8 59 48.3 ...
+&gt;  $ HPIRank       : int  54 40 130 15 48 102 57 85 31 104 ...
+&gt;  $ GDPperCapita  : int  5316 7062 2335 14280 4945 31794 33700 5016 2053 7918 ...
+&gt;  $ HDI           : num  0.801 0.733 0.446 0.869 0.775 0.962 0.948 0.746 0.547 0.804 ...
+&gt;  $ Population    : num  3.15 32.85 16.1 38.75 3.02 ...
+```
+
+---
+
+Los datos tienen 11 variables:
+
+  - Region: 1 = Latin America, 2 = Western nations, 3 = Middle East, 4 = Sub-Saharan Africa, 5 = South Asia, 6 = East Asia, 7 = former Communist countries
+  - Happiness Scored on a 0-10 scale for average level of happiness (10 is happiest)
+  - LifeExpectancy Average life expectancy (in years)
+  - Footprint Ecological footprint - a measure of the (per capita) ecological impact
+  - HLY Happy Life Years - combines life expectancy with well-being
+  - HPI Happy Planet Index (0-100 scale)
+  - HPIRank HPI rank for the country
+  - GDPperCapita Gross Domestic Product (per capita)
+  - HDI Human Development Index
+  - Population Population (in millions)
+
+---
+# ¿Cómo ordenar variables? arrange
+
+
+```r
+mis_datos %&gt;% 
+  arrange(variable)
+```
+
+Orden descendiente:
+
+
+```r
+mis_datos %&gt;% 
+  arrange(-variable)
+
+mis_datos %&gt;% 
+  arrange(desc(variable))
+```
+
+Para ordenar una variable y luego, la otra:
+
+
+```r
+mis_datos %&gt;% 
+  arrange(variable_1, variable_2)
+```
+---
+
+# Ejemplo: arrange
+
+
+```r
+ascendente &lt;- datos %&gt;% 
+  arrange(Region)
+```
+
+
+```
+&gt;     Country Region Happiness LifeExpectancy Footprint  HLY   HPI HPIRank
+&gt; 1 Argentina      1       7.1           74.8       2.5 53.4 58.95      15
+&gt; 2    Belize      1       6.6           75.9       2.6 50.2 54.53      27
+&gt; 3   Bolivia      1       6.5           64.7       2.1 42.1 49.35      47
+&gt; 4    Brazil      1       7.6           71.7       2.4 54.3 61.01       9
+&gt; 5     Chile      1       6.3           78.3       3.0 49.2 49.72      46
+&gt; 6  Colombia      1       7.3           72.3       1.8 53.0 66.10       6
+&gt;   GDPperCapita   HDI Population
+&gt; 1        14280 0.869      38.75
+&gt; 2         7109 0.778       0.29
+&gt; 3         2819 0.695       9.18
+&gt; 4         8402 0.800     186.83
+&gt; 5        12027 0.867      16.30
+&gt; 6         7304 0.791      44.95
+```
+
+---
+# Ejemplo (2): arrange
+
+
+```r
+descendente &lt;- datos %&gt;% 
+  arrange(- Region)
+```
+
+
+```
+&gt;                  Country Region Happiness LifeExpectancy Footprint  HLY   HPI
+&gt; 1                Albania      7       5.5           76.2       2.2 41.7 47.91
+&gt; 2                Armenia      7       5.0           71.7       1.4 36.1 48.28
+&gt; 3             Azerbaijan      7       5.3           67.1       2.2 35.4 41.21
+&gt; 4                Belarus      7       5.8           68.7       3.9 40.1 35.67
+&gt; 5 Bosnia and Herzegovina      7       5.9           74.5       2.9 44.0 44.96
+&gt; 6               Bulgaria      7       5.5           72.7       2.7 39.8 42.04
+&gt;   HPIRank GDPperCapita   HDI Population
+&gt; 1      54         5316 0.801       3.15
+&gt; 2      48         4945 0.775       3.02
+&gt; 3      85         5016 0.746       8.39
+&gt; 4     104         7918 0.804       9.78
+&gt; 5      65         7032 0.803       3.78
+&gt; 6      82         9032 0.824       7.74
+```
+
+---
+# Escogiendo variables: select
+
+Se queda con todas las filas pero retiene solo algunas variables (columnas)
+
+
+```r
+mis_datos %&gt;% 
+    select(variable_1, variable_2)
+```
+
+Elimina variables:
+
+
+```r
+mis_datos %&gt;% 
+    select(- variable_1, - variable_2)
+```
+
+---
+# Ejemplo: select
+
+
+```r
+feliz_chico &lt;- datos %&gt;%
+  select(Country, Region, Happiness)
+```
+
+
+```
+&gt;     Country Region Happiness
+&gt; 1   Albania      7       5.5
+&gt; 2   Algeria      3       5.6
+&gt; 3    Angola      4       4.3
+&gt; 4 Argentina      1       7.1
+&gt; 5   Armenia      7       5.0
+&gt; 6 Australia      2       7.9
+```
+
+---
+# Enfocándonos en ciertos casos: filter
+
+
+```r
+mis_datos %&gt;% 
+  filter(una_expresion_logica)
+```
+
+.center[
+&lt;img src="images/dplyr_filter.jpeg" width="800"&gt;]
+
+---
+# Comparación de elementos
+La comparación de elementos se realiza con los siguientes comandos:
+
+- .pink['&gt;'] mayor a / .pink['&lt;'] menor a
+- .pink['&gt;='] mayor o igual / .pink['&lt;='] menor o igual a
+- .pink['=='] igual a
+- .pink['!='] distinto de
+- .pink['%in%'] contenido en
+
+Este tipo de operaciones devuelven un vector lógico dependiendo si la condición se cumple o no.
+
+Que se cumplan dos condiciones:
+
+
+```r
+mis_datos %&gt;% filter(una_expresion_logica &amp; otra_expresion_logica)
+```
+
+Que se cumpla una u otra condición:
+
+
+```r
+mis_datos %&gt;% filter(una_expresion_logica | otra_expresion_logica)
+```
+---
+# Ejemplo: filter
+
+
+```r
+feliz2 &lt;- datos %&gt;%
+  filter(Region == 2)
+```
+
+
+```
+&gt;     Country Region Happiness LifeExpectancy Footprint  HLY   HPI HPIRank
+&gt; 1 Australia      2       7.9           80.9       7.8 63.7 36.64     102
+&gt; 2   Austria      2       7.8           79.4       5.0 61.9 47.69      57
+&gt; 3   Belgium      2       7.6           78.8       5.1 60.0 45.36      64
+&gt; 4    Canada      2       8.0           80.3       7.1 64.0 39.40      89
+&gt; 5    Cyprus      2       7.2           79.0       4.5 56.6 46.19      62
+&gt; 6   Denmark      2       8.1           77.9       8.0 62.9 35.47     105
+&gt;   GDPperCapita   HDI Population
+&gt; 1        31794 0.962      20.40
+&gt; 2        33700 0.948       8.23
+&gt; 3        32119 0.946      10.48
+&gt; 4        33375 0.961      32.31
+&gt; 5        22699 0.903       0.76
+&gt; 6        33973 0.949       5.42
+```
+---
+# Ejemplo (2): filter
+
+
+```r
+feliz3 &lt;- datos %&gt;%
+   filter(Happiness &gt; 7)
+```
+
+
+
+```
+&gt;     Country Region Happiness LifeExpectancy Footprint  HLY   HPI HPIRank
+&gt; 1 Argentina      1       7.1           74.8       2.5 53.4 58.95      15
+&gt; 2 Australia      2       7.9           80.9       7.8 63.7 36.64     102
+&gt; 3   Austria      2       7.8           79.4       5.0 61.9 47.69      57
+&gt; 4   Belgium      2       7.6           78.8       5.1 60.0 45.36      64
+&gt; 5    Brazil      1       7.6           71.7       2.4 54.3 61.01       9
+&gt; 6    Canada      2       8.0           80.3       7.1 64.0 39.40      89
+&gt;   GDPperCapita   HDI Population
+&gt; 1        14280 0.869      38.75
+&gt; 2        31794 0.962      20.40
+&gt; 3        33700 0.948       8.23
+&gt; 4        32119 0.946      10.48
+&gt; 5         8402 0.800     186.83
+&gt; 6        33375 0.961      32.31
+```
+---
+
+# Arrange, filter &amp; select
+
+.hi-pink[Recordatorio:] arrange, filter &amp; select no alteran el dataset original (mis_datos)
+
+
+```r
+nuevos_datos &lt;- viejos_datos %&gt;%
+    filter(algunas_filas) %&gt;% 
+    select(algunas_columnas) %&gt;% 
+    arrange(por_variable)
+```
+
+Para alterar el dataset original:
+
+
+```r
+viejos_datos &lt;- viejos_datos %&gt;%
+    filter(algunas_filas) %&gt;% 
+    select(algunas_columnas) %&gt;% 
+    arrange(por_variable)
+```
+
+---
+# Creando nuevas variables: mutate
+
+
+```r
+mis_datos &lt;- mis_datos %&gt;%
+    mutate(variable = expresión)
+```
+.center[
+&lt;img src="images/dplyr_mutate.png" width="600"&gt;]
+---
+# Ejemplo: mutate
+
+
+```r
+feliz &lt;- datos %&gt;%
+  mutate(TotalGDP = GDPperCapita * Population )
+```
+
+
+```
+&gt;     Country Region Happiness LifeExpectancy Footprint  HLY   HPI HPIRank
+&gt; 1   Albania      7       5.5           76.2       2.2 41.7 47.91      54
+&gt; 2   Algeria      3       5.6           71.7       1.7 40.1 51.23      40
+&gt; 3    Angola      4       4.3           41.7       0.9 17.8 26.78     130
+&gt; 4 Argentina      1       7.1           74.8       2.5 53.4 58.95      15
+&gt; 5   Armenia      7       5.0           71.7       1.4 36.1 48.28      48
+&gt; 6 Australia      2       7.9           80.9       7.8 63.7 36.64     102
+&gt;   GDPperCapita   HDI Population TotalGDP
+&gt; 1         5316 0.801       3.15  16745.4
+&gt; 2         7062 0.733      32.85 231986.7
+&gt; 3         2335 0.446      16.10  37593.5
+&gt; 4        14280 0.869      38.75 553350.0
+&gt; 5         4945 0.775       3.02  14933.9
+&gt; 6        31794 0.962      20.40 648597.6
+```
+
+---
+# Renombrando variables: rename
+
+
+```r
+mis_datos &lt;- mis_datos %&gt;%
+    rename(nuevo_nombre = viejo_nombre)
+```
+
+---
+# Ejemplo: rename
+
+
+```r
+datos_es &lt;- datos %&gt;%
+  rename(pais = Country,
+         felicidad = Happiness)
+```
+
+
+```
+&gt;        pais Region felicidad LifeExpectancy Footprint  HLY   HPI HPIRank
+&gt; 1   Albania      7       5.5           76.2       2.2 41.7 47.91      54
+&gt; 2   Algeria      3       5.6           71.7       1.7 40.1 51.23      40
+&gt; 3    Angola      4       4.3           41.7       0.9 17.8 26.78     130
+&gt; 4 Argentina      1       7.1           74.8       2.5 53.4 58.95      15
+&gt; 5   Armenia      7       5.0           71.7       1.4 36.1 48.28      48
+&gt; 6 Australia      2       7.9           80.9       7.8 63.7 36.64     102
+&gt;   GDPperCapita   HDI Population
+&gt; 1         5316 0.801       3.15
+&gt; 2         7062 0.733      32.85
+&gt; 3         2335 0.446      16.10
+&gt; 4        14280 0.869      38.75
+&gt; 5         4945 0.775       3.02
+&gt; 6        31794 0.962      20.40
+```
+
+---
+# Resúmenes agrupados
+
+
+```r
+resumen &lt;- mis_datos %&gt;% 
+  group_by(variable_para_agrupar) %&gt;% 
+  summarise(
+    mediana = median(variable),
+    media = mean(variable),
+    des_est = sd(variable))
+resumen
+```
+
+
+```r
+resumen &lt;- mis_datos %&gt;% 
+  group_by(variable_para_agrupar) %&gt;% 
+  summarise(
+    mediana = median(variable, na.rm = T),
+    media = mean(variable, na.rm = T),
+    des_est = sd(variable, na.rm = T))
+resumen
+```
+
+---
+
+
+```r
+resumen &lt;- mis_datos %&gt;% 
+  group_by(variable_para_agrupar) %&gt;% 
+  summarise(cuenta = n())
+resumen
+```
+---
+
+# Ejemplo: group &amp; summarise
+
+
+```r
+resumen &lt;- datos %&gt;%
+  group_by(Region) %&gt;%
+  summarise(AverageHappy = mean(Happiness))
+```
+
+
+```
+&gt; # A tibble: 6 x 2
+&gt;   Region AverageHappy
+&gt;    &lt;int&gt;        &lt;dbl&gt;
+&gt; 1      1         6.91
+&gt; 2      2         7.55
+&gt; 3      3         5.99
+&gt; 4      4         4.05
+&gt; 5      5         5.59
+&gt; 6      6         6.32
+```
+
+---
+# En resumen...
+
+1) .hi-pink[%&gt;%]: agiliza el flujo de trabajo
+    
+2) .hi-pink[arrange]: ordena variables
+
+3) .hi-pink[select]: elige variables
+    
+4) .hi-pink[filter]: elige filas
+    
+5) .hi-pink[mutate]: crear nuevas variables
+    
+6) .hi-pink[rename]: renombra variables
+    
+7) .hi-pink[group_by and summarize]: crea resúmenes agrupados
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

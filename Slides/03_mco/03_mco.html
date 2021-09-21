@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>MCO: primeros pasos</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Paula Pereda (ppereda@correo.um.edu.uy)" />
+    <link href="03_mco_files/remark-css/default.css" rel="stylesheet" />
+    <link href="03_mco_files/remark-css/metropolis.css" rel="stylesheet" />
+    <link href="03_mco_files/remark-css/metropolis-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="my-css.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# MCO: primeros pasos
+## Econometría I
+### Paula Pereda (<a href="mailto:ppereda@correo.um.edu.uy" class="email">ppereda@correo.um.edu.uy</a>)
+### 27 de agosto de 2021
+
+---
+
+class: inverse, middle
+
+
+
+
+
+
+layout: false
+class: inverse, middle
+# Repaso
+
+---
+layout: true
+# Población *vs.* muestra
+
+---
+
+## Modelos y notación
+
+Escribimos nuestro modelo poblacional (simple) así:
+
+$$ y_i = \beta_0 + \beta_1 x_i + u_i $$
+
+y nuestro modelo de regresión estimado basado en la muestra así:
+
+$$ y_i = \hat{\beta}_0 + \hat{\beta}_1 x_i + e_i $$
+
+Un modelo estimado de regresión produce estimaciones para cada observación:
+
+$$ \hat{y}_i = \hat{\beta}_0 + \hat{\beta}_1 x_i $$
+
+lo que nos da la línea que _mejor se ajusta_ a nuestra muestra.
+
+---
+layout: true
+
+# Población *vs.* muestra
+
+**Pregunta:** ¿Por qué nos importa la *población vs. muestra*?
+
+---
+
+--
+
+
+
+.pull-left[
+
+&lt;img src="03_mco_files/figure-html/pop1-1.svg" style="display: block; margin: auto;" /&gt;
+
+.center[**Población**]
+
+]
+
+--
+
+.pull-right[
+
+&lt;img src="03_mco_files/figure-html/scatter1-1.svg" style="display: block; margin: auto;" /&gt;
+
+.center[**Relación poblacional**]
+
+$$ y_i = 2.95 + 0.5 x_i + u_i $$
+
+$$ y_i = \beta_0 + \beta_1 x_i + u_i $$
+
+
+]
+
+---
+
+.pull-left[
+
+&lt;img src="03_mco_files/figure-html/sample1-1.svg" style="display: block; margin: auto;" /&gt;
+
+.center[**Muestra 1:** 30 individuos aleatorios]
+
+]
+
+--
+
+.pull-right[
+
+&lt;img src="03_mco_files/figure-html/sample1 scatter-1.svg" style="display: block; margin: auto;" /&gt;
+
+.center[
+
+**Relación poblacional**
+&lt;br&gt;
+`\(y_i = 2.95 + 0.5 x_i + u_i\)`
+
+**Relación muestral**
+&lt;br&gt;
+`\(\hat{y}_i = 3.3 + 0.45 x_i\)`
+
+]
+
+]
+
+---
+count: false
+
+.pull-left[
+
+&lt;img src="03_mco_files/figure-html/sample2-1.svg" style="display: block; margin: auto;" /&gt;
+
+.center[**Muestra 2:** 30 individuos aleatorios]
+
+]
+
+.pull-right[
+
+&lt;img src="03_mco_files/figure-html/sample2 scatter-1.svg" style="display: block; margin: auto;" /&gt;
+
+.center[
+
+**Relación poblacional**
+&lt;br&gt;
+`\(y_i = 2.95 + 0.5 x_i + u_i\)`
+
+**Relación muestral**
+&lt;br&gt;
+`\(\hat{y}_i = 3.38 + 0.46 x_i\)`
+
+]
+
+]
+---
+count: false
+
+.pull-left[
+
+&lt;img src="03_mco_files/figure-html/sample3-1.svg" style="display: block; margin: auto;" /&gt;
+
+.center[**Muestra 3:** 30 individuos aleatorios]
+
+]
+
+.pull-right[
+
+&lt;img src="03_mco_files/figure-html/sample3 scatter-1.svg" style="display: block; margin: auto;" /&gt;
+
+.center[
+
+**Relación poblacional**
+&lt;br&gt;
+`\(y_i = 2.95 + 0.5 x_i + u_i\)`
+
+**Relación muestral**
+&lt;br&gt;
+`\(\hat{y}_i = 3.41 + 0.42 x_i\)`
+
+]
+
+]
+
+---
+layout: false
+class: clear, middle
+
+Vamos a repetir esto **10.000 veces**.
+
+(Este ejercicio se llama simulación Monte Carlo.)
+
+---
+layout: true
+# Población *vs.* muestra
+
+---
+
+&lt;img src="03_mco_files/figure-html/simulation scatter-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+layout: true
+# Población *vs.* muestra
+
+---
+
+.pull-left[
+&lt;img src="03_mco_files/figure-html/simulation scatter2-1.png" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+
+- En **promedio**, nuestras líneas de regresión coinciden muy bien con la línea poblacional.
+
+- Sin embargo, **líneas individuales** (muestras) realmente pueden fallar.
+
+- Las diferencias entre las muestras individuales y la población generan **incertidumbre** para el o la econometrista.
+]
+
+---
+
+**Pregunta:** ¿Por qué nos importa la *población vs. muestra*?
+
+--
+
+**Respuesta:** La incertidumbre importa.
+
+`\(\hat{\beta}\)` en sí mismo es una variable aleatoria, que depende de la muestra aleatoria. Cuando tomamos una muestra y corremos una regresión, no sabemos si es una 'buena' muestra, `\(\hat{\beta}\)` está cerca de `\(\beta\)`, o una 'mala muestra', nuestra muestra difiere mucho de la población.
+
+---
+layout: false
+# Población *vs.* muestra
+
+## Incertidumbre
+
+Hacer un seguimiento de esta incertidumbre será clave en el curso.
+
+- Estimación de errores estándar para nuestras estimaciones.
+
+- Prueba de hipótesis.
+
+- Corrección de heterocedasticidad y autocorrelación.
+
+--
+
+Primero, repasemos cómo obtenemos estas estimaciones de regresión (inciertas).
+
+---
+# Regresión lineal
+
+## El estimador
+
+Podemos estimar la línea de regresión en .mono[R] (`lm(y ~ x, my_data)`) pero... ¿de dónde vienen estas estimaciones? 
+
+
+Unas diapositivas atrás:
+
+&gt; $$ \hat{y}_i = \hat{\beta}_0 + \hat{\beta}_1 x_i $$
+&gt; lo que nos da la línea que *mejor se ajusta* a nuestra muestra (set de datos).
+
+¿Pero a qué nos referimos con la "línea que mejor se ajusta"?
+
+---
+layout: false
+
+# Siendo el "mejor"
+
+**Pregunta:** ¿A qué nos referimos con la *línea que mejor se ajusta*?
+
+**Respuestas:**
+
+- En general (en econometría), la *línea que mejor se ajusta* significa la línea que minimiza la suma de minimizando la suma de errores o residuos al cuadrado (SCR):
+
+.center[
+
+`\(\text{SCR} = \sum_{i = 1}^{n} e_i^2\quad\)` donde `\(\quad e_i = y_i - \hat{y}_i\)`
+
+]
+
+- **Mínimos Cuadrados** Ordinarios (**MCO**) minimiza la suma de errores o residuos al cuadrado.
+- Basado en un conjunto de supuestos (en su mayoría aceptables), MCO
+  - Es insesgado (y consistente)
+  - Es el *mejor* (mínima varianza) estimador lineal insesgado (MELI)
+
+---
+layout: true
+# MCO *vs.* otras líneas/estimadores
+
+---
+
+Consideramos el set de datos generado anteriormente.
+
+&lt;img src="03_mco_files/figure-html/ols vs lines 1-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+count: false
+
+Para cualquier línea `\(\left(\hat{y} = \hat{\beta}_0 + \hat{\beta}_1 x\right)\)`
+
+&lt;img src="03_mco_files/figure-html/vs lines 2-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+count: false
+
+Para cualquier línea `\(\left(\hat{y} = \hat{\beta}_0 + \hat{\beta}_1 x\right)\)`, podemos calcular los errores: `\(e_i = y_i - \hat{y}_i\)`
+
+&lt;img src="03_mco_files/figure-html/ols vs lines 3-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+count: false
+
+Para cualquier línea `\(\left(\hat{y} = \hat{\beta}_0 + \hat{\beta}_1 x\right)\)`, podemos calcular los errores: `\(e_i = y_i - \hat{y}_i\)`
+
+&lt;img src="03_mco_files/figure-html/ols vs lines 4-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+count: false
+
+Para cualquier línea `\(\left(\hat{y} = \hat{\beta}_0 + \hat{\beta}_1 x\right)\)`, podemos calcular los errores: `\(e_i = y_i - \hat{y}_i\)`
+
+&lt;img src="03_mco_files/figure-html/ols vs lines 5-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+count: false
+
+La SCR expresa los errores al cuadrado `\(\left(\sum e_i^2\right)\)`: mayores errores, reciben mayores penalizaciones.
+
+&lt;img src="03_mco_files/figure-html/ols vs lines 6-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+count: false
+
+El estimador de MCO es una combinación de `\(\hat{\beta}_0\)` y `\(\hat{\beta}_1\)` que minimizan la SCR.
+
+&lt;img src="03_mco_files/figure-html/ols vs lines 7-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+layout: true
+# MCO
+
+## Formalmente
+
+---
+
+En una regresión lineal simple, el estimador de MCO proviene de escoger los `\(\hat{\beta}_0\)` y `\(\hat{\beta}_1\)` que minimizan la suma de errores o residuos al cuadrado (SCR), _es decir_,
+
+`$$\min_{\hat{\beta}_0,\, \hat{\beta}_1} \text{SCR}$$`
+
+--
+
+pero ya sabemos que `\(\text{SCR} = \sum_i e_i^2\)`, ahora usamos las definiciones de `\(e_i\)` y `\(\hat{y}\)`.
+
+$$
+`\begin{aligned}
+  e_i^2 &amp;= \left( y_i - \hat{y}_i \right)^2 = \left( y_i - \hat{\beta}_0 - \hat{\beta}_1 x_i \right)^2 \\
+  &amp;= y_i^2 - 2 y_i \hat{\beta}_0 - 2 y_i \hat{\beta}_1 x_i + \hat{\beta}_0^2 + 2 \hat{\beta}_0 \hat{\beta}_1 x_i + \hat{\beta}_1^2 x_i^2
+\end{aligned}`
+$$
+
+--
+
+**Recuerden:** Minimizar una función multivariante requiere (**1**) primeras derivadas iguales a cero (las *condiciones de primer orden*) y (**2**) condiciones de segundo orden (concavidad).
+
+---
+
+Nos estamos acercando. Necesitamos **minimizar las SCR**. Hemos mostrado cómo SCR se relaciona con nuestra muestra (nuestros datos: `\(x\)` y `\(y\)`) y nuestras estimaciones, _es decir_, `\(\hat{\beta}_0\)` y `\(\hat{\beta}_1\)`.
+
+$$ \text{SCR} = \sum_i e_i^2 = \sum_i \left( y_i^2 - 2 y_i \hat{\beta}_0 - 2 y_i \hat{\beta}_1 x_i + \hat{\beta}_0^2 + 2 \hat{\beta}_0 \hat{\beta}_1 x_i + \hat{\beta}_1^2 x_i^2 \right) $$
+
+Para las condiciones de primer orden de minimización, tomamos la primera derivada de la SCR con respecto `\(\hat{\beta}_0\)` y `\(\hat{\beta}_1\)`.
+
+$$
+`\begin{aligned}
+  \dfrac{\partial \text{SCR}}{\partial \hat{\beta}_0} &amp;= \sum_i \left( 2 \hat{\beta}_0 + 2 \hat{\beta}_1 x_i - 2 y_i \right) = 2n \hat{\beta}_0 + 2 \hat{\beta}_1 \sum_i x_i - 2 \sum_i y_i \\
+  &amp;= 2n \hat{\beta}_0 + 2n \hat{\beta}_1 \overline{x} - 2n \overline{y}
+\end{aligned}`
+$$
+
+donde `\(\overline{x} = \frac{\sum x_i}{n}\)` y `\(\overline{y} = \frac{\sum y_i}{n}\)` son medias muestrales de `\(x\)` y `\(y\)` (tamaño `\(n\)`).
+
+---
+
+Las condiciones de primer orden establecen que las derivadas son iguales a cero, entonces:
+
+$$ \dfrac{\partial \text{SCR}}{\partial \hat{\beta}_0} = 2n \hat{\beta}_0 + 2n \hat{\beta}_1 \overline{x} - 2n \overline{y} = 0 $$
+
+lo que implica que
+
+$$ \hat{\beta}_0 = \overline{y} - \hat{\beta}_1 \overline{x} $$
+
+Ahora para `\(\hat{\beta}_1\)`.
+
+---
+
+Tomamos la derivada de SCR con respecto a `\(\hat{\beta}_1\)`
+
+$$
+`\begin{aligned}
+  \dfrac{\partial \text{SCR}}{\partial \hat{\beta}_1} &amp;= \sum_i \left( 2 \hat{\beta}_0 x_i + 2 \hat{\beta}_1 x_i^2 - 2 y_i x_i \right) = 2 \hat{\beta}_0 \sum_i x_i + 2 \hat{\beta}_1 \sum_i x_i^2 - 2 \sum_i y_i x_i \\
+  &amp;= 2n \hat{\beta}_0 \overline{x} + 2 \hat{\beta}_1 \sum_i x_i^2 - 2 \sum_i y_i x_i
+\end{aligned}`
+$$
+
+lo igualamos a cero (condiciones de primer orden, de nuevo 😅)
+
+$$ \dfrac{\partial \text{SCR}}{\partial \hat{\beta}_1} = 2n \hat{\beta}_0 \overline{x} + 2 \hat{\beta}_1 \sum_i x_i^2 - 2 \sum_i y_i x_i = 0 $$
+
+y sustituimos en nuestra relación por `\(\hat{\beta}_0\)`, _es decir_, `\(\hat{\beta}_0 = \overline{y} - \hat{\beta}_1 \overline{x}\)`. Entonces,
+
+$$
+ 2n \left(\overline{y} - \hat{\beta}_1 \overline{x}\right) \overline{x} + 2 \hat{\beta}_1 \sum_i x_i^2 - 2 \sum_i y_i x_i = 0
+$$
+
+---
+
+Continuando de la diapositiva anterior
+
+$$ 2n \left(\overline{y} - \hat{\beta}_1 \overline{x}\right) \overline{x} + 2 \hat{\beta}_1 \sum_i x_i^2 - 2 \sum_i y_i x_i = 0 $$
+
+multiplicamos
+
+$$ 2n \overline{y}\,\overline{x} - 2n \hat{\beta}_1 \overline{x}^2 + 2 \hat{\beta}_1 \sum_i x_i^2 - 2 \sum_i y_i x_i = 0 $$
+
+$$ \implies 2 \hat{\beta}_1 \left( \sum_i x_i^2 - n \overline{x}^2 \right) = 2 \sum_i y_i x_i - 2n \overline{y}\,\overline{x} $$
+
+$$ \implies \hat{\beta}_1 = \dfrac{\sum_i y_i x_i - 2n \overline{y}\,\overline{x}}{\sum_i x_i^2 - n \overline{x}^2} = \dfrac{\sum_i (x_i - \overline{x})(y_i - \overline{y})}{\sum_i (x_i - \overline{x})^2} $$
+
+---
+
+¡Listo! 
+
+Ahora tenemos adorables estimadores de MCO para la pendiente
+
+$$ \hat{\beta}_1 = \dfrac{\sum_i (x_i - \overline{x})(y_i - \overline{y})}{\sum_i (x_i - \overline{x})^2} $$
+
+y el intercepto
+
+$$ \hat{\beta}_0 = \overline{y} - \hat{\beta}_1 \overline{x} $$
+
+Ahora sabemos de donde viene la parte de *mínimos cuadrados* de Mínimos Cuadrados Ordinarios 🤓🎊
+
+--
+
+Pasamos ahora a los supuestos y propiedades (implícitas) de MCO.
+
+---
+layout: false
+class: inverse, middle
+
+# MCO: Supuestos y propiedades
+
+---
+layout: true
+# MCO: Supuestos y propiedades
+
+## Propiedades
+---
+
+**Pregunta:** ¿Qué propiedades nos podrían interesar para un estimador?
+
+--
+
+**Tangente:** Revisemos primero las propiedades estadísticas.
+
+---
+
+**Refrescando:** Funciones de densidad
+
+Recuerden que usamos **funciones de densidad de probabilidad** para describir la probabilidad que una **variable aleatoria continua** adopte un rango de valores. (El área total = 1)
+
+Estas caracterizan distribuciones de probabilidad, y las distribuciones más comunes/famosas/populares obtienen nombres (_por ejemplo_, normal, *t*, Gamma).
+
+---
+
+**Refrescando:** Funciones de densidad
+
+La probabilidad de que una variable aleatoria normal estándar tome un valor entre -2 y 0: `\(\mathop{\text{P}}\left(-2 \leq X \leq 0\right) = 0.48\)`
+
+&lt;img src="03_mco_files/figure-html/example: pdf-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+
+**Refrescando:** Funciones de densidad
+
+La probabilidad de que una variable aleatoria normal estándar tome un valor entre -1.96 y 1.96: `\(\mathop{\text{P}}\left(-1.96 \leq X \leq 1.96\right) = 0.95\)`
+
+&lt;img src="03_mco_files/figure-html/example: pdf 2-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+
+**Refrescando:** Funciones de densidad
+
+La probabilidad de que una variable aleatoria normal estándar adquiera un valor superior a 2: `\(\mathop{\text{P}}\left(X &gt; 2\right) = 0.023\)`
+
+&lt;img src="03_mco_files/figure-html/example: pdf 3-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+
+Imagine que estamos tratando de estimar un parámetro desconocido `\(\beta\)`, y conocemos las distribuciones de tres estimadores en competencia. ¿Cuál querríamos? ¿Cómo decidiríamos?
+
+&lt;img src="03_mco_files/figure-html/competing pdfs-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+
+**Pregunta:** ¿Qué propiedades nos podrían interesar para un estimador?
+
+--
+
+**Respuesta uno: Sesgo.**
+
+En promedio (después de *muchas* muestras), ¿el estimador tiende hacia el valor correcto?
+
+**Más formalmente:** ¿La media de la distribución del estimador es igual al parámetro que se estima?
+
+$$ \mathop{\text{Sesgo}}_\beta \left( \hat{\beta} \right) = \mathop{\boldsymbol{E}}\left[ \hat{\beta} \right] - \beta $$
+
+---
+
+**Respuesta uno: Sesgo.**
+
+.pull-left[
+
+**Estimador insesgado:** `\(\mathop{\boldsymbol{E}}\left[ \hat{\beta} \right] = \beta\)`
+
+&lt;img src="03_mco_files/figure-html/unbiased pdf-1.svg" style="display: block; margin: auto;" /&gt;
+
+]
+
+--
+
+.pull-right[
+
+**Estimador sesgado:** `\(\mathop{\boldsymbol{E}}\left[ \hat{\beta} \right] \neq \beta\)`
+
+&lt;img src="03_mco_files/figure-html/biased pdf-1.svg" style="display: block; margin: auto;" /&gt;
+
+]
+
+---
+
+**Respuesta dos: Varianza.**
+
+Las tendencias centrales (medias) de distribuciones en competencia no son las únicas cosas que importan. También nos preocupamos por la **varianza** de un estimador.
+
+$$ \mathop{\text{Var}} \left( \hat{\beta} \right) = \mathop{\boldsymbol{E}}\left[ \left( \hat{\beta} - \mathop{\boldsymbol{E}}\left[ \hat{\beta} \right] \right)^2 \right] $$
+
+Los estimadores de varianza más baja significan que obtenemos estimaciones más cercanas a la media en cada muestra.
+
+---
+count: false
+
+**Respuesta dos: Varianza.**
+
+&lt;img src="03_mco_files/figure-html/variance pdf-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+
+**Respuesta uno: Sesgo.**
+
+**Respuesta dos: Varianza.**
+
+**Sútilmente:** El trade-off sesgo-varianza.
+
+¿Deberíamos estar dispuestos a tomar un poco de sesgo para reducir la varianza?
+
+En econometría, generalmente nos apegamos a estimadores insesgados (o consistentes). Pero otras disciplinas (especialmente las ciencias de la computación) piensan un poco más en esta compensación.
+
+---
+layout: false
+
+# El trade-off sesgo-varianza.
+
+&lt;img src="03_mco_files/figure-html/variance bias-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+# MCO: Supuestos y propiedades
+
+## Propiedades
+
+Como ya habrán adivinado,
+
+- MCO es **insesgado**.
+- MCO tiene la **varianza mínima** de todos los estimadores lineales insesgados.
+
+---
+# MCO: Supuestos y propiedades
+
+## Propiedades
+
+Pero... estas (muy buenas) propiedades dependen de un conjunto de supuestos:
+
+1. La relación de población es lineal en parámetros con una perturbación aditiva.
+
+2. Nuestra variable `\(X\)` es **exógena**, _es decir_, `\(\mathop{\boldsymbol{E}}\left[u \mid X \right] = 0\)`.
+
+3. La variable `\(X\)` tiene variación. Y si hay múltiples variables explicativas, no son perfectamente colineales.
+
+4. Las perturbaciones de la población `\(u_i\)` se distribuyen de forma independiente e idéntica como variables aleatorias normales con una media de cero $\left(\mathop{\boldsymbol{E}} \left[u \right] = 0 \right) $ y varianza `\(\sigma^2\)` (_es decir_, `\(\mathop{\boldsymbol{E}} \left[u^2\right] = \sigma^2\)`). Independientemente distribuidos y significan cero conjuntamente implican `\(\mathop{\boldsymbol{E}} \left[u_i u_j\right] = 0\)` para cualquier `\(i \neq j\)`.
+
+---
+# MCO: Supuestos y propiedades
+
+## Supuestos
+
+Diferentes supuestos garantizan diferentes propiedades:
+
+- Supuestos (1), (2), y (3) hace al insesgado MCO.
+- Supuesto (4) nos da un estimador insesgado para la varianza de nuestro estimador MCO.
+
+Durante nuestro curso, discutiremos las muchas formas en que la vida real puede **violar estas suposiciones**. Por ejemplo:
+
+- Relaciones no lineales en nuestros parámetros/perturbaciones (o errores de especificación).
+- Perturbaciones que no se distribuyen de forma idéntica y/o no son independientes.
+- Violaciones de exogeneidad (especialmente sesgo de variable omitida).
+
+---
+# MCO: Supuestos y propiedades
+
+## Expectativa condicional
+
+Para muchas aplicaciones, nuestro supuesto más importante es **exogeneidad**, _es decir_,
+$$
+`\begin{align}
+  \mathop{E}\left[ u \mid X \right] = 0
+\end{align}`
+$$
+
+¿pero qué significa esto?
+
+--
+
+Una forma de pensar en esta definición:
+
+&gt; Para *cualquier* valor de `\(X\)`, la media de los residuos debe ser cero.
+
+- _Por ejemplo_, `\(\mathop{E}\left[ u \mid X=1 \right]=0\)` *y* `\(\mathop{E}\left[ u \mid X=100 \right]=0\)`
+
+- _Por ejemplo_, `\(\mathop{E}\left[ u \mid X_2=\text{Mujer} \right]=0\)` *y* `\(\mathop{E}\left[ u \mid X_2=\text{Varón} \right]=0\)`
+
+- Aviso: `\(\mathop{E}\left[ u \mid X \right]=0\)` es más restrictiva que `\(\mathop{E}\left[ u \right]=0\)`
+---
+layout: false
+class: clear, middle
+
+Gráficamente...
+---
+exclude: true
+
+
+---
+class: clear
+
+La exogeneidad válida, _es decir_, `\(\mathop{E}\left[ u \mid X \right] = 0\)`
+
+&lt;img src="03_mco_files/figure-html/ex_good_exog-1.svg" style="display: block; margin: auto;" /&gt;
+---
+class: clear
+
+La exogeneidad inválida, _es decir_, `\(\mathop{E}\left[ u \mid X \right] \neq 0\)`
+
+&lt;img src="03_mco_files/figure-html/ex_bad_exog-1.svg" style="display: block; margin: auto;" /&gt;
+
+
+---
+layout: false
+class: inverse, middle
+# Incertidumbre e inferencia
+
+---
+layout: true
+# Incertidumbre e inferencia
+
+---
+
+## ¿Hay algo más?
+
+Hasta este punto, sabemos que MCO tiene algunas propiedades interesantes, y sabemos cómo estimar un coeficiente de pendiente de intersección y a través de MCO.
+
+Nuestro flujo de trabajo actual:
+- Obtener datos (puntos con valores `\(x\)` y `\(y\)`)
+- Regresar `\(y\)` en `\(x\)`
+- Trace la línea MCO (_es decir_, $\hat {y} = \hat {\beta}_0 + \hat{\beta}_1 $)
+- ¿Hecho?
+
+Pero, ¿cómo podemos **aprender** algo de este ejercicio?
+---
+
+## Hay más
+
+Pero, ¿cómo podemos **aprender** algo de este ejercicio?
+
+- Con base en nuestro valor de `\(\hat{\beta}_1\)`, ¿podemos descartar valores hipotetizados previamente?
+- ¿Qué confianza debemos tener en la precisión de nuestras estimaciones?
+- ¿Qué tan bien explica nuestro modelo la variación que observamos en `\(y\)`?
+
+Necesitamos poder lidiar con la incertidumbre. Ingresa en escena: **La inferencia.**
+
+---
+layout: true
+# Incertidumbre e inferencia
+## Aprendiendo de nuestros errores
+
+---
+
+Como señaló nuestra simulación anterior, nuestro problema con la **incertidumbre** es que no sabemos si nuestra estimación muestral está *cerca* o *lejos* del parámetro de población desconocido. &lt;sup&gt; .pink[†] &lt;/sup&gt;
+
+Sin embargo, no todo está perdido. Podemos usar los errores `\(\left (e_i = y_i - \hat{y}_i \right)\)` para tener una idea de qué tan bien nuestro modelo explica la variación observada en `\(y\)`.
+
+Cuando nuestro modelo parece estar haciendo un trabajo "agradable", es posible que tengamos un poco más de confianza al usarlo para conocer la relación entre `\(y\)` y `\(x\)`.
+
+Ahora solo tenemos que formalizar lo que realmente significa un "buen trabajo".
+
+.note[.pink [†]: Excepto cuando corremos la simulación nosotros mismos, por eso nos gustan las simulaciones 😉]
+
+---
+
+En primer lugar, estimaremos la varianza de `\(u_i\)` (recuerde: `\(\mathop{\text{Var}} \left (u_i \right) = \sigma^ 2\)`) usando nuestros errores al cuadrado, _es decir_,
+
+`$$s^2 = \dfrac{\sum_i e_i^2} {n - k}$$`
+
+donde `\(k\)` da el número de términos de pendiente y intersecciones que estimamos (_por ejemplo_, `\(\beta_0\)` y `\(\beta_1\)` daría `\(k = 2\)`).
+
+`\(s^2\)` es un estimador insesgado de `\(\ sigma^2\)`.
+
+---
+
+Luego demostramos que la varianza de `\(\hat {\beta}_1\)` (para regresión lineal simple) es
+
+`$$\mathop {\text {Var}} \left (\hat {\beta} _1 \right) = \dfrac {s^2} {\sum_i \left (x_i - \overline {x} \right)^ 2}$$`
+
+lo que muestra que la varianza de nuestro estimador de pendiente:
+
+1. aumenta a medida que nuestras perturbaciones se vuelven más ruidosas
+2. disminuye a medida que aumenta la varianza de `\(x\)`
+
+---
+
+*Más comúnmente:* El **error estándar** de `\(\hat{\beta}_1\)`
+
+$$ \mathop{\hat{\text{EE}}} \left( \hat{\beta}_1 \right) = \sqrt{\dfrac{s^2}{\sum_i \left( x_i - \overline{x} \right)^2}} $$
+
+*Recuerden:* El error estándar de un estimador es la desviación estándar de la distribución del estimador.
+
+---
+
+El error estándar en .mono[R]'s `lm`, se ve así:
+
+
+```r
+tidy(lm(y ~ x, pop_df))
+```
+
+```
+&gt; # A tibble: 2 x 5
+&gt;   term        estimate std.error statistic  p.value
+&gt;   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+&gt; 1 (Intercept)    2.95     0.314       9.40 2.37e-15
+&gt; 2 x              0.495    0.0615      8.06 1.88e-12
+```
+
+
+---
+layout: false
+class: inverse, middle
+# Interpretando coeficientes
+
+---
+layout: true
+# Interpretando coeficientes
+
+---
+## Variables continuas
+
+Consideramos la siguiente relación:
+
+$$ \text{salario}_i = \beta_0 + \beta_1 \, \text{educación}_i + u_i $$
+
+donde
+
+- `\(\text{salario}_i\)` es una variable continua que mide el salario de cada individuo
+- `\(\text{educación}_i\)` es una variable continua que mide los años de educación de cada persona
+
+--
+
+**Interpretaciones**
+
+- `\(\beta_0\)`: es el intercepto de `\(y\)`, _es decir_, el `\(\text{salario}\)` cuando `\(\text{educación} = 0\)`
+- `\(\beta_1\)`: el aumento esperado en el `\(\text{salario}\)` para un aumento unitario de `\(\text{educación}\)`
+
+---
+## Variables continuas
+
+Considerando el siguiente modelo:
+
+$$ y = \beta_0 + \beta_1 \, x + u $$
+
+Diferencio el modelo:
+
+$$ \dfrac{dy}{dx} = \beta_1 $$
+
+_Es decir_, la pendiente nos dice el aumento esperado en la variable dependiente para un aumento en una unidad de la variable explicativa, **manteniendo todas las demás variables constantes** (*ceteris paribus*).
+---
+## Variables binarias
+
+Considero la relación:
+
+$$ \text{salario}_i = \beta_0 + \beta_1 \, \text{mujer}_i + u_i $$
+
+donde
+
+- `\(\text{salario}_i\)` es una variable continua que mide el salario de cada individuo
+- `\(\text{mujer}_i\)` es un variable binaria que toma el valor `\(1\)` cuando `\(i\)` es mujer
+
+--
+
+**Interpretaciones**
+
+- `\(\beta_0\)`: el `\(\text{salario}\)` esperado para los hombres (cuando `\(\text{mujer} = 0\)`)
+- `\(\beta_1\)`: la diferencia esperada en el `\(\text{salario}\)` entre hombres y mujeres
+- `\(\beta_0 + \beta_1\)`: el `\(\text{salario}\)` esperado para mujeres
+
+---
+## Variables binarias
+
+Derivación:
+
+$$
+`\begin{aligned}
+ \mathop{\boldsymbol{E}}\left[ \text{salario} | \text{hombre} \right] &amp;=
+ \mathop{\boldsymbol{E}}\left[ \beta_0 + \beta_1\times 0 + u_i \right] \\
+ &amp;= \mathop{\boldsymbol{E}}\left[ \beta_0 + 0 + u_i \right] \\
+ &amp;= \beta_0
+\end{aligned}`
+$$
+
+--
+
+$$
+`\begin{aligned}
+ \mathop{\boldsymbol{E}}\left[ \text{salario} | \text{mujer} \right] &amp;=
+ \mathop{\boldsymbol{E}}\left[ \beta_0 + \beta_1\times 1 + u_i \right] \\
+ &amp;= \mathop{\boldsymbol{E}}\left[ \beta_0 + \beta_1 + u_i \right] \\
+ &amp;= \beta_0 + \beta_1
+\end{aligned}`
+$$
+
+--
+
+**Nota:** Si no hay variables adicionales de control, entonces `\(\hat{\beta}_1\)` equivale a la diferencia entre las medias de los grupos, _en este caso_, `\(\overline{x}_\text{mujer} - \overline{x}_\text{hombre}\)`.
+
+--
+
+**Nota&lt;sub&gt;2&lt;/sub&gt;:** El *manteniendo todo lo demás constante* también aplica en regresiones que tienen variables binarias.
+
+---
+## Variables binarias
+
+`\(y_i = \beta_0 + \beta_1 x_i + u_i\)` para la variable binaria `\(x_i = \{\color{#314f4f}{0}, \, \color{#e64173}{1}\}\)`
+
+
+
+&lt;img src="03_mco_files/figure-html/dat plot 1-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+## Variables binarias
+
+`\(y_i = \beta_0 + \beta_1 x_i + u_i\)` para la variable binarias `\(x_i = \{\color{#314f4f}{0}, \, \color{#e64173}{1}\}\)`
+
+&lt;img src="03_mco_files/figure-html/dat plot 2-1.svg" style="display: block; margin: auto;" /&gt;
+---
+## Interacciones
+
+Las interacciones permiten que el efecto de una variable cambie según el nivel de otra variable.
+
+** Ejemplos **
+
+1. ¿Cambia el efecto de la escolarización en el salario por sexo?
+
+2. ¿El efecto del género en el salario cambia según la etnia?
+
+3. ¿Cambia el efecto de la escolarización en el salario según la experiencia?
+---
+
+## Interacciones
+
+Anteriormente, considerábamos un modelo que permitía a mujeres y hombres tener salarios diferentes, pero el modelo asumía que el efecto de la escuela sobre el salario era el mismo para todos:
+
+$$ \text{salario}_i = \beta_0 + \beta_1 \, \text{educación}_i + \beta_2 \, \text{mujer}_i + u_i $$
+
+pero también podemos permitir que el efecto de la escuela varíe según el sexo:
+
+$$ \text{salario}_i = \beta_0 + \beta_1 \, \text{educación}_i + \beta_2 \, \text{mujer}_i + \beta_3 \, \text{educación}_i\times\text{mujer}_i + u_i $$
+
+---
+
+## Interacciones
+
+El modelo donde la escolarización tiene el mismo efecto para todos (**&lt;font color="#e64173"&gt;M&lt;/font&gt;** y **&lt;font color="#314f4f"&gt;H&lt;/font&gt;**):
+
+
+
+&lt;img src="03_mco_files/figure-html/int plot 1-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Interacciones
+
+El modelo donde el efecto de la educación puede variar por sexo (**&lt;font color="#e64173"&gt;M&lt;/font&gt;** y **&lt;font color="#314f4f"&gt;H&lt;/font&gt;**):
+
+&lt;img src="03_mco_files/figure-html/int plot 2-1.svg" style="display: block; margin: auto;" /&gt;
+
+&lt;!-- --- --&gt;
+&lt;!-- ## Interactions --&gt;
+
+&lt;!-- Interpreting coefficients can be a little tricky with interactions, but the key&lt;sup&gt;.pink[†]&lt;/sup&gt; is to carefully work through the math. --&gt;
+
+&lt;!-- .footnote[.pink[†] As is often the case with econometrics.] --&gt;
+
+&lt;!-- $$ \text{salario}_i = \beta_0 + \beta_1 \, \text{educación}_i + \beta_2 \, \text{Female}_i + \beta_3 \, \text{educación}_i\times\text{Female}_i + u_i $$ --&gt;
+
+&lt;!-- Expected returns for an additional year of educacióning for women: --&gt;
+
+&lt;!-- $$ --&gt;
+&lt;!-- \begin{aligned} --&gt;
+&lt;!--  \mathop{\boldsymbol{E}}\left[ \text{salario}_i | \text{Female} \land \text{educación} = \ell + 1 \right] - --&gt;
+&lt;!--     \mathop{\boldsymbol{E}}\left[ \text{salario}_i | \text{Female} \land \text{educación} = \ell \right] &amp;= \\ --&gt;
+&lt;!--  \mathop{\boldsymbol{E}}\left[ \beta_0 + \beta_1 (\ell+1) + \beta_2 + \beta_3 (\ell + 1) + u_i \right] - --&gt;
+&lt;!--     \mathop{\boldsymbol{E}}\left[ \beta_0 + \beta_1 \ell + \beta_2 + \beta_3 \ell + u_i  \right] &amp;= \\ --&gt;
+&lt;!--  \beta_1 + \beta_3 --&gt;
+&lt;!-- \end{aligned} --&gt;
+&lt;!-- $$ --&gt;
+
+&lt;!-- -- --&gt;
+
+&lt;!-- Similarly, `\(\beta_1\)` gives the expected return to an additional year of educacióning for men. Thus, `\(\beta_3\)` gives the **difference in the returns to educacióning** for women and men. --&gt;
+
+---
+## Especificación log-lineal
+
+En economía, con frecuencia se emplean variables explicativas en logaritmos, por ejemplo,
+
+$$ \log(\text{salario}_i) = \beta_0 + \beta_1 \, \text{educación}_i + u_i $$
+
+
+Esta especificación cambia nuestra interpretación de los coeficientes de pendiente.
+
+**Interpretación**
+
+- Un aumento de una unidad en nuestra variable explicativa aumenta la variable de resultado en aproximadamente `\(\beta_1\)` veces `\(100\)` por ciento.
+
+- *Ejemplo:* Un año adicional de educación aumenta el salario en aproximadamente un 3 por ciento (para `\(\beta_1 = 0.03\)`).
+
+&lt;!-- --- --&gt;
+&lt;!-- # Interpretando coeficientes --&gt;
+&lt;!-- ## Especificación log-lineal --&gt;
+
+&lt;!-- **Derivación** --&gt;
+
+&lt;!-- Considerando el modelo log-lineal: --&gt;
+
+&lt;!-- $$ \log(y) = \beta_0 + \beta_1 \, x + u $$ --&gt;
+
+&lt;!-- y diferenciando --&gt;
+
+&lt;!-- $$ \dfrac{dy}{y} = \beta_1 dx $$ --&gt;
+
+&lt;!-- Entonces un cambio marginal en `\(x\)` , `\(\text{dx}\)` , lleva a un aumento `\(\beta_1 dx\)` **cambio porcentual** en `\(y\)`. --&gt;
+
+---
+## Especificación log-lineal
+
+&lt;img src="03_mco_files/figure-html/log linear plot-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+## Especificación log-log 
+
+De manera similar, los econometristas emplean con frecuencia modelos log-log, en los que y se está en logaritmos y al menos una variable explicativa, también:
+
+$$ \log(\text{salario}_i) = \beta_0 + \beta_1 \, \log(\text{educación}_i) + u_i $$
+
+**Interpretación:**
+
+- Un aumento del uno por ciento en `\(x\)` dará lugar a un cambio porcentual de `\(\beta_1\)` en `\(y\)`.
+- Se interpreta como una elasticidad.
+
+---
+## Especificación log-log 
+
+**Derivación**
+
+Consideramos el siguiente modelo log-log:
+
+$$ \log(y) = \beta_0 + \beta_1 \, \log(x) + u $$
+y diferenciamos
+
+$$ \dfrac{dy}{y} = \beta_1 \dfrac{dx}{x} $$
+
+que dice que para un aumento del uno por ciento en `\(x\)`, veremos un aumento del `\(\beta_1\)` por ciento en `\(y\)`. Como elasticidad:
+
+$$ \dfrac{dy}{dx} \dfrac{x}{y} = \beta_1 $$
+
+---
+## Log-lineal con variable binaria
+
+** Nota: ** Si tenemos un modelo log-lineal con una variable binaria, la interpretación del coeficiente de esa variable cambia.
+
+Consideramos:
+
+`$$\log(y_i) = \beta_0 + \beta_1 x_1 + u_i$$`
+
+siendo `\(x_1\)` una variable binaria.
+
+  
+La interpretación de `\(\beta_1\)` ahora es:
+
+- Cuando `\(x_1\)` cambia de 0 a 1, `\(y\)` cambiará en `\(100\times\left(e ^ {\beta_1} -1 \right)\)` por ciento.
+
+---
+##Resumen
+
+| Modelo      | Interpretación                                                                                            |
+|-------------|-----------------------------------------------------------------------------------------------------------|
+| Nivel-nivel | Incremento de unidades en "y" cuando aumenta 1 unidad la "x" (ambas en sus unidades de medida originales) |
+| Log-nivel   | `\(\beta\)`*100 (incremento porcentual de "y" cuando aumenta una unidad la "x")                                      |
+| Nivel-log   | `\(\beta\)`/100 (incremento en unidades de "y" cuando aumenta un 1% la "x")                                          |
+| Log-log     | Incremento porcentual de "y" cuando aumenta un 1% la "x"                                                  |
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
