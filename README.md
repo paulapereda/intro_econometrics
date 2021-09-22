@@ -4,13 +4,15 @@ Bienvenidos a **Econometría I: Introducción a la Econometría** (Segundo Semes
 
 Para obtener información sobre los detalles del curso, consulte el [programa](https://raw.githack.com/paulapereda/econometrics_I_21/master/Programa/EconometriaI_2021.pdf).
 
-## Slides de los talleres
+## Slides de los talleres<sup>[1](#myfootnote1)</sup>
 
 1. [Introducción a R](https://github.com/paulapereda/econometrics_I_21/blob/master/Slides/01_introduccion) <br> [Slides (html)](https://taller-1-econometria-1.netlify.app/#1) | [.Rmd](https://github.com/paulapereda/econometrics_I_21/blob/master/Slides/01_introduccion/01_intro.Rmd) | [Taller (.R)](https://raw.githubusercontent.com/paulapereda/econometrics_I_21/master/Slides/01_introduccion/Taller%201%20-%20Introducci%C3%B3n%20a%20R.R)
 2. [Introducción a R (tidyverse)](https://github.com/paulapereda/econometrics_I_21/blob/master/Slides/02_introduccion_II) <br> [Slides (html)](https://taller-2-econometria-1.netlify.app/#1) | [.Rmd](https://github.com/paulapereda/econometrics_I_21/blob/master/Slides/02_introduccion_II/02_intro.Rmd) | [Taller (.R)](https://raw.githubusercontent.com/paulapereda/econometrics_I_21/master/Slides/02_introduccion_II/Taller%202.R)
 3. [MCO: primeros pasos](https://github.com/paulapereda/econometrics_I_21/blob/master/Slides/03_mco) <br> [Slides (html)](https://taller-3-econometria-1.netlify.app/#1) | [.Rmd](https://github.com/paulapereda/econometrics_I_21/blob/master/Slides/03_mco/03_mco.Rmd) | [Taller (.R)](https://raw.githubusercontent.com/paulapereda/econometrics_I_21/master/Slides/03_mco/Taller%203%20-%20MCO.R)
 4. [MCO: inferencia y más](https://github.com/paulapereda/econometrics_I_21/blob/master/Slides/04_mco_II) <br> [Slides (html)](https://taller-4-econometria-1.netlify.app/#1) | [.Rmd](https://github.com/paulapereda/econometrics_I_21/blob/master/Slides/04_mco_II/04_mco_II.Rmd)
 5. [MCO: inferencia y levantamiento de supuestos](https://github.com/paulapereda/econometrics_I_21/blob/master/Slides/05_mco_III_levantamiento_supuestos_I) <br> [Slides (html)](https://taller-5-econometria-1.netlify.app/#1) | [.Rmd](https://github.com/paulapereda/econometrics_I_21/blob/master/Slides/05_mco_III_levantamiento_supuestos_I/05_mco_III.Rmd) | [Taller (.R)](https://raw.githubusercontent.com/paulapereda/econometrics_I_21/master/Slides/05_mco_III_levantamiento_supuestos_I/MCO_by_hand.R)
+
+<a name="myfootnote1">1</a>: Las slides usan el estilo de las slides del curso [EC421S19 de Ed Rubin]() y también uso contenido de sus slides para algunos de los talleres. 
 
 ## Set de problemas
 
