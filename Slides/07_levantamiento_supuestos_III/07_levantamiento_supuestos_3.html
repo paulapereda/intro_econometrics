@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Heterocedasticidad &amp; autocorrelación</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Paula Pereda (ppereda@correo.um.edu.uy)" />
+    <link href="07_levantamiento_supuestos_3_files/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="07_levantamiento_supuestos_3_files/remark-css-0.0.1/metropolis.css" rel="stylesheet" />
+    <link href="07_levantamiento_supuestos_3_files/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="my-css.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Heterocedasticidad &amp; autocorrelación
+## Econometría I
+### Paula Pereda (<a href="mailto:ppereda@correo.um.edu.uy" class="email">ppereda@correo.um.edu.uy</a>)
+### 30 de octubre de 2021
+
+---
+
+class: inverse, middle
+
+
+
+
+# Heterocedasticidad
+---
+
+
+Escribamos nuestros **supuestos actuales**
+
+--
+
+1. Nuestra muestra (los `\(x_k\)`'s y la `\(y_i\)`) fueron .hi[extraídas aleatoriamente] de la población.
+
+--
+
+2. `\(y\)` es una .hi[función lineal] de los `\(\beta_k\)`'s y `\(u_i\)`.
+
+--
+
+3. No hay .hi[multicolinealidad perfecta] en nuestra muestra.
+
+--
+
+4. Las variables explicativas son .hi[exogenas]: `\(\mathop{\boldsymbol{E}}\left[ u \middle| X \right] = 0 \left(\implies \mathop{\boldsymbol{E}}\left[ u \right] = 0\right)\)`.
+
+--
+
+5. Los errores tiene .hi[varianza constante] `\(\sigma^2\)` y .hi[cero covarianza], _por ejemplo_,
+  - `\(\mathop{\boldsymbol{E}}\left[ u_i^2 \middle| X \right] = \mathop{\text{Var}} \left( u_i \middle| X \right) = \sigma^2 \implies \mathop{\text{Var}} \left( u_i \right) = \sigma^2\)`
+  - `\(\mathop{\text{Cov}} \left( u_i, \, u_j \middle| X \right) = \mathop{\boldsymbol{E}}\left[ u_i u_j \middle| X \right] = 0\)` for `\(i\neq j\)`
+
+--
+
+6. Los errores provienen de una distribución .hi[Normal], _por ejemplo_, `\(u_i \overset{\text{iid}}{\sim} \mathop{\text{N}}\left( 0, \sigma^2 \right)\)`.
+
+---
+
+Nos vamos a enfocar en el supuesto \#5:
+
+&gt; 5\. Los errores tiene .hi[varianza constante] `\(\sigma^2\)` y .hi[cero covarianza], 
+&gt; _por ejemplo_,
+&gt; - `\(\mathop{\boldsymbol{E}}\left[ u_i^2 \middle| X \right] = \mathop{\text{Var}} \left( u_i \middle| X \right) = \sigma^2 \implies \mathop{\text{Var}} \left( u_i \right) = \sigma^2\)`
+&gt; - `\(\mathop{\text{Cov}} \left( u_i, \, u_j \middle| X \right) = \mathop{\boldsymbol{E}}\left[ u_i u_j \middle| X \right] = 0\)` para `\(i\neq j\)`
+
+--
+
+Específicamente, nos enfocaremos en el supuesto de .hi[varianza constante] (también conocido como *homocedasticidad*).
+
+--
+
+**Violación del supuesto:**
+
+.hi[Heterocedasticidad:] `\(\mathop{\text{Var}} \left( u_i \right) = \sigma^2_i\)` y `\(\sigma^2_i \neq \sigma^2_j\)` para algunos `\(i\neq j\)`.
+
+--
+
+En otras palabras: nuestros errores tienen distintas varianzas.
+
+---
+
+Ejemplo clásico de heterocedasticidad: el embudo
+
+La varianza de `\(u\)` aumenta con `\(x\)`
+
+&lt;img src="07_levantamiento_supuestos_3_files/figure-html/het ex1-1.svg" style="display: block; margin: auto;" /&gt;
+---
+
+Otro ejemplo de heterocedasticidad: (¿doble embudo?)
+
+Varianza de `\(u\)` aumentando en los extremos de `\(x\)`
+
+&lt;img src="07_levantamiento_supuestos_3_files/figure-html/het ex2 -1.svg" style="display: block; margin: auto;" /&gt;
+---
+
+Otra ejemplo de heterocedasticidad:
+
+Diferentes variancias de `\(u\)` por grupo
+
+&lt;img src="07_levantamiento_supuestos_3_files/figure-html/het ex3 -1.svg" style="display: block; margin: auto;" /&gt;
+---
+
+La .hi[heterocedasticidad] está presente donde la varianza de `\(u\)` cambia con cualquier combinación de nuestras variables explicativas `\(x_1\)`, a través de `\(x_k\)` (por lo tanto, `\(X\)`).
+
+--
+
+(Muy común en la práctica)
+
+---
+
+## Consecuencias
+
+Entonces... ¿cuáles son las consecuencias de la heterocedasticidad? ¿Sesgo? ¿Ineficiencia?
+
+Primero, chequeamos si tiene consecuencias para la insesgadez de MCO.
+
+--
+
+**Recordemos&lt;sub&gt;1&lt;/sub&gt;:** MCO siendo insesgado significa `\(\mathop{\boldsymbol{E}}\left[ \hat{\beta}_k \middle| X \right] = \beta_k\)` para todos `\(k\)`.
+
+--
+
+**Recordemos&lt;sub&gt;2&lt;/sub&gt;:** previamente demostramos que `\(\hat{\beta}_1 = \dfrac{\sum_i\left(y_i-\overline{y}\right)\left(x_i-\overline{x}\right)}{\sum_i\left(x_i -\overline{x}\right)^2}\)`
+
+--
+
+Nos ayudará escribir el estimador como
+
+$$ \hat{\beta}_1 = \beta_1 + \dfrac{\sum_i \left( x_i - \overline{x} \right) u_i}{\sum_i \left( x_i - \overline{x} \right)^2} $$
+---
+
+**Prueba:** Asumiendo `\(y_i = \beta_0 + \beta_1 x_i + u_i\)`
+
+$$
+`\begin{aligned}
+  \hat{\beta}_1
+  &amp;= \dfrac{\sum_i\left(y_i-\overline{y}\right)\left(x_i-\overline{x}\right)}{\sum_i\left(x_i -\overline{x}\right)^2} \\
+  &amp;= \dfrac{\sum_i\left(\left[ \beta_0 + \beta_1 x_i + u_i \right]- \left[ \beta_0 + \beta_1 \overline{x} + \overline{u} \right] \right)\left(x_i-\overline{x}\right)}{\sum_i\left(x_i -\overline{x}\right)^2} \\
+  &amp;= \dfrac{\sum_i\left(\beta_1 \left[ x_i - \overline{x} \right] + \left[u_i - \overline{u}\right]  \right)\left(x_i-\overline{x}\right)}{\sum_i\left(x_i -\overline{x}\right)^2} \\
+  &amp;= \dfrac{\sum_i\left(\beta_1 \left[ x_i - \overline{x} \right]^2 + \left[ x_i - \overline{x} \right] \left[u_i - \overline{u}\right]\right)}{\sum_i\left(x_i -\overline{x}\right)^2} \\
+  &amp;= \beta_1 + \dfrac{\sum_i\left(x_i - \overline{x}\right) \left(u_i - \overline{u}\right)}{\sum_i\left(x_i -\overline{x}\right)^2}
+\end{aligned}`
+$$
+---
+
+$$
+`\begin{aligned}
+  \hat{\beta}_1
+  &amp;= \cdots = \beta_1 + \dfrac{\sum_i\left(x_i - \overline{x}\right) \left(u_i - \overline{u}\right)}{\sum_i\left(x_i -\overline{x}\right)^2} \\
+  &amp;= \beta_1 + \dfrac{\sum_i\left(x_i - \overline{x}\right) u_i - \overline{u} \sum_i\left(x_i - \overline{x}\right)}{\sum_i\left(x_i -\overline{x}\right)^2} \\
+  &amp;= \beta_1 + \dfrac{\sum_i\left(x_i - \overline{x}\right) u_i - \overline{u} \left(\sum_i x_i - \sum_i \overline{x}\right)}{\sum_i\left(x_i -\overline{x}\right)^2} \\
+  &amp;= \beta_1 + \dfrac{\sum_i\left(x_i - \overline{x}\right) u_i - \overline{u} \left(\sum_i x_i - n \overline{x}\right)}{\sum_i\left(x_i -\overline{x}\right)^2} \\
+  &amp;= \beta_1 + \dfrac{\sum_i\left(x_i - \overline{x}\right) u_i - \overline{u} \color{#e64173}{\left(\sum_i x_i - \sum_i x_i\right)}}{\sum_i\left(x_i -\overline{x}\right)^2} \\
+  &amp;= \beta_1 + \dfrac{\sum_i\left(x_i - \overline{x}\right) u_i}{\sum_i\left(x_i -\overline{x}\right)^2} \quad \text{😅}
+\end{aligned}`
+$$
+---
+
+## Consecuencias: Sesgo
+
+Ahora queremos saber si la heterocedasticidad sesga el estimador de MCO para `\(\beta_1\)`.
+
+--
+
+$$
+`\begin{aligned}
+  \mathop{\boldsymbol{E}}\left[ \hat{\beta}_1 \middle| X \right]
+  &amp;= \mathop{\boldsymbol{E}}\left[ \beta_1 + \dfrac{\sum_i\left(x_i - \overline{x}\right) u_i}{\sum_i\left(x_i -\overline{x}\right)^2} \middle| X \right] \\[0.5em]
+  &amp;= \beta_1 + \mathop{\boldsymbol{E}}\left[ \dfrac{\sum_i\left(x_i - \overline{x}\right) u_i}{\sum_i\left(x_i -\overline{x}\right)^2} \middle| X \right] \\[0.5em]
+  &amp;= \beta_1 + \dfrac{\sum_i\left(x_i - \overline{x}\right)}{\sum_i\left(x_i -\overline{x}\right)^2} \color{#e64173}{\underbrace{\mathop{\boldsymbol{E}}\left[ u_i \middle| X \right]}_{=0}} \\[0.5em]
+  &amp;= \beta_1
+\end{aligned}`
+$$
+
+--
+.hi[MCO todavía es insesgado] para los `\(\beta_k\)`.
+---
+
+## Consecuencias: Eficiencia
+
+La eficiencia e inferencia de MCOno sobreviven la heterocedasticidad.
+
+- En la presencia de heterocedasticidad, MCO ya no es .hi[MELI].
+
+--
+- Sería más informativo (eficiente) .hi[ponderar las observaciones] inversamente a la varianza de su `\(u_i\)`.
+
+  - Reducción de peso de alta variación `\(u_i\)`'s (demasiado ruidoso para aprender mucho).
+
+  - Observaciones al alza con baja varianza `\(u_i\)` 's (más confiable).
+
+  - Ahora tienes la idea de mínimos cuadrados ponderados (MCP)
+
+---
+
+## Consecuencias: Inferencia
+
+Los .hi[errores estándar de MCO están sesgados] en presencia de heterocedasticidad.
+
+- Intervalos de confianza incorrectos
+
+- Problemas para el testeo de hipotesis (tanto `\(t\)` como `\(F\)` tests)
+
+--
+
+- Es difícil aprender sin inferencia.
+---
+
+## Soluciones
+
+1. **Tests** para determinar si hay presencia de heterocedasticidad.
+
+2. **Remedios** para (1) la eficiencia y (2) la inferencia
+
+---
+layout: true
+# Testeando la heterocedasticidad
+
+---
+class: inverse, middle
+
+---
+
+Si bien *podríamos* tener soluciones para la heterocedasticidad, la eficiencia de nuestros estimadores depende de si la heterocedasticidad está presente o no.
+
+1. **Goldfeld-Quandt test**
+
+1. **Breusch-Pagan test**
+
+1. **White test**
+
+--
+
+Cada una de estas pruebas se centra en el hecho de que podemos .hi[usar el residuo de MCO] `\(\color{#e64173}{e_i}\)` .hi[para estimar la perturbación de la población] `\(\color{#e64173}{u_i}\)`.
+
+
+---
+layout: true
+# Testeando la heterocedasticidad
+## El test de Goldfeld-Quandt
+---
+
+Se centra en un tipo específico de heterocedasticidad: si la varianza de `\(u_i\)` difiere .hi[entre dos grupos]. &lt;sup&gt;†&lt;/sup&gt;
+
+¿Recuerda cómo usamos nuestros residuos para estimar `\(\sigma ^ 2\)`?
+
+`$$s ^ 2 = \dfrac {\text {SCE}} {n-1} = \dfrac {\sum_i e_i ^ 2} {n-1}$$`
+
+Usaremos esta misma idea para determinar si hay evidencia de que nuestros dos grupos difieren en las variaciones de sus perturbaciones, comparando efectivamente `\(s ^ 2_1\)` y `\(s ^ 2_2\)` de nuestros dos grupos.
+
+.note[[†]: La prueba G-Q fue una de las primeras pruebas de heterocedasticidad (1965).]
+
+---
+
+Operacionalmente,
+
+.pseudocode-small[
+
+1. Ordenamos las observaciones por `\(x\)`
+
+2. Dividimos los datos en dos grupos de tamaño n.super[⭑]
+  - G&lt;sub&gt;1&lt;/sub&gt;: El primer tercio
+  - G&lt;sub&gt;2&lt;/sub&gt;: El último tercio
+
+3. Corremos regresiones separadas de `\(y\)` en `\(x\)` para G.sub[1] y G.sub[2]
+
+4. Nos quedamos con SCE.sub[1] y SCE.sub[2]
+
+5. Calculamos el estadístico del test G-Q
+
+]
+---
+
+El estadístico del test G-Q
+
+$$ F_{\left(n^{\star}-k,\, n^{\star}-k\right)} = \dfrac{\text{SCE}_2/(n^\star-k)}{\text{SCE}_1/(n^\star-k)} = \dfrac{\text{SCE}_2}{\text{SCE}_1} $$
+
+sigue una distribución `\(F\)` (bajo la hipótesis nula) con `\(n^{\star}-k\)` y `\(n^{\star}-k\)` grados de libertad.&lt;sup&gt;†&lt;/sup&gt;
+
+--
+
+**Notas**
+
+- El test G-Q requiere que los errores sigan una distribución normal.
+- G-Q asuma un tipo o forma muy específica de heterocedasticidad.
+- Funciona muy bien si conocemos la forma potencia de la heterocedasticidad.
+
+.footnote[
+[†]: Goldfeld and Quandt sugirieron `\(n^{\star}\)` de `\((3/8)n\)`. `\(k\)` da el número de parámetros estimados (_por ejemplo_, `\(\hat{\beta}_j\)`'s).
+]
+---
+
+&lt;img src="07_levantamiento_supuestos_3_files/figure-html/gq1a-1.svg" style="display: block; margin: auto;" /&gt;
+---
+
+&lt;img src="07_levantamiento_supuestos_3_files/figure-html/gq1b-1.svg" style="display: block; margin: auto;" /&gt;
+
+`\(F_{375,\,375} = \dfrac{\color{#e64173}{\text{SCE}_2 = 18,203.4}}{\color{#314f4f}{\text{SCE}_1 = 1,039.5}} \approx 17.5 \implies\)` *p*-value `\(&lt; 0.001\)`
+
+`\(\therefore\)` Rechazamos H.sub[0]: `\(\sigma^2_1 = \sigma^2_2\)` y concluimos que hay evidencia estadísticamente significativa de heterocedasticidad.
+---
+
+El problema...
+---
+
+&lt;img src="07_levantamiento_supuestos_3_files/figure-html/gq2-1.svg" style="display: block; margin: auto;" /&gt;
+
+`\(F_{375,\,375} = \dfrac{\color{#e64173}{\text{SCE}_2 = 14,516.8}}{\color{#314f4f}{\text{SCE}_1 = 14,937.1}} \approx 1 \implies\)` *p*-value `\(\approx 0.609\)`
+
+`\(\therefore\)` Fallamos en rechazar la hipótesis H.sub[0]: `\(\sigma^2_1 = \sigma^2_2\)` cuando hay heterocedasticidad.
+---
+layout: true
+# Testeando la heterocedasticidad
+## El test de Breusch-Pagan 
+---
+
+Breusch y Pagan (1981) intentaron resolver este problema de ser muy específicos con la forma funcional de la heterocedasticidad.
+
+- Permite a los datos mostrar cómo la varianza de `\(u_i\)` se correlaciona con `\(X\)`.
+
+- Si `\(\sigma_i^2\)` se correlaciona con `\(X\)`, entonces tenemos heterocedasticidad.
+
+- Regresa `\(e_i^2\)` en `\(X = \left[ 1,\, x_1,\, x_2,\, \ldots,\, x_k \right]\)` y testea la significancia conjunta.
+---
+
+Cómo se implementa:
+
+.pseudocode-small[
+
+1\. Regresa y en el intercepto, x.sub[1], x.sub[2], …, x.sub[k].
+
+2\. Se queda con los residuos e.
+
+3\. Regresa e.super[2] en el intercepto, x.sub[1], x.sub[2], …, x.sub[k].
+
+`$$e\_i^2 = \alpha\_0 + \alpha\_1 x\_{1i} + \alpha\_2 x\_{2i} + \cdots + \alpha\_k x\_{ki} + v\_i$$`
+
+4\. Se queda con R.super[2].
+
+5\. Testea la hipótesis H.sub[0]: `\(\alpha_1 = \alpha_2 = \cdots = \alpha_k = 0\)`
+
+]
+
+---
+
+El estadístico del test de B-P es
+
+`$$\text{LM} = n \times R^2_{e}$$`
+
+donde `\(R^2_e\)` es el `\(R^2\)` de la regresión
+
+`$$e\_i^2 = \alpha\_0 + \alpha\_1 x\_{1i} + \alpha\_2 x\_{2i} + \cdots + \alpha\_k x\_{ki} + v\_i$$`
+
+Bajo la nula, `\(\text{LM}\)` se distribuye asintóticamente `\(\chi^2_k\)`.
+
+--
+
+Este estadístico testeat H.sub[0]: `\(\alpha_1 = \alpha_2 = \cdots = \alpha_k = 0\)`.
+
+Rechazar la hipotesis nula implica que hay evidencia de heterocedasticidad.
+
+---
+layout: true
+# Testeando la heterocedasticidad
+## La distribución `\(\chi^2\)`
+
+---
+
+Acabamos de mencionar que bajo el valor nulo, el estadístico de la prueba B-P se distribuye como una variable aleatoria `\(\ chi^2\)` con `\(k\)` grados de libertad.
+
+La distribución $\chi ^ 2 $ es solo otro ejemplo de una distribución común (con nombre) (como la distribución Normal, la distribución `\(t\)` y la `\(F\)`).
+
+---
+
+Tres ejemplos de `\(\chi_k^2\)`: `\(\color{#314f4f}{k = 1}\)`, `\(\color{#e64173}{k = 2}\)`, y `\(\color{orange}{k = 9}\)`
+
+&lt;img src="07_levantamiento_supuestos_3_files/figure-html/chisq1-1.svg" style="display: block; margin: auto;" /&gt;
+---
+
+Probabilidad de observar un estadístico más extremo `\(\widehat{\text{LM}}\)` bajo H.sub[0]
+
+&lt;img src="07_levantamiento_supuestos_3_files/figure-html/chisq2-1.svg" style="display: block; margin: auto;" /&gt;
+---
+layout: true
+# Testeando la heterocedasticidad
+## El test de Breusch-Pagan
+---
+
+**Problema:** Seguimos asumiendo una .hi[forma funcional] bastante restrictiva entre nuestras variables explicativas `\(X\)` y las variaciones de nuestras perturbaciones `\(\sigma ^ 2_i\)`.
+
+--
+
+**Resultado:** B-P *puede* aún pasar por alto formas bastante simples de heterocedasticidad.
+
+---
+
+Las pruebas de Breusch-Pagan siguen siendo .hi[sensibles a la forma funcional].
+
+&lt;img src="07_levantamiento_supuestos_3_files/figure-html/bp1-1.svg" style="display: block; margin: auto;" /&gt;
+
+$$
+`\begin{aligned}
+  e_i^2 &amp;= \hat{\alpha}_0 + \hat{\alpha}_1 x_{1i} &amp; \widehat{\text{LM}} &amp;= 1.26 &amp;\mathit{p}\text{-value} \approx 0.261 \\
+  e_i^2 &amp;= \hat{\alpha}_0 + \hat{\alpha}_1 x_{1i} \color{#e64173}{+ \hat{\alpha}_2 x^2_{1i}} &amp; \widehat{\text{LM}} &amp;= 185.8 &amp;\mathit{p}\text{-value} &lt; 0.001
+\end{aligned}`
+$$
+---
+layout: true
+# Testeando la heterocedasticidad
+## El test de White
+---
+
+Hasta ahora hemos estado probando relaciones específicas entre nuestras variables explicativas y las varianzas de las perturbaciones, por ejemplo,
+
+- H.sub[0]: `\(\sigma_1^2 = \sigma_2^2\)` para dos grupos basados en `\(x_j\)` (**G-Q**)
+
+- H.sub[0]: `\(\alpha_1 = \cdots = \alpha_k = 0\)` de `\(e_i^2 = \alpha_0 + \alpha_1 x_{1i} + \cdots + \alpha_k x_{ki} + v_i\)` (**B-P**)
+
+--
+
+Sin embargo, en realidad queremos saber si
+
+`$$\sigma_1^2 = \sigma_2^2 = \cdots = \sigma_n^2$$`
+
+**P:** ¿No podemos simplemente probar esta hipótesis?
+
+--
+
+**R:** Más o menos.
+---
+
+Con este objetivo, Hal White aprovechó el hecho de que podemos .hi[reemplazar el requisito de homocedasticidad con una suposición más débil]:
+
+- **Viejo:** `\(\mathop{\text{Var}} \left( u_i \middle| X \right) = \sigma^2\)`
+
+- **Nuevo:** `\(u^2\)` está *incorrelacionado* con las variables explicativas (_por ejemplo_,  `\(x_j\)` para todo `\(j\)`), sus cuadrados (_por ejemplo_, `\(x_j^2\)`), y las interacciones d eprimer grado (_por ejemplo_, `\(x_j x_h\)`).
+
+--
+
+Este nuevo supuesto es más fácil de probar explícitamente (*pista:* regresión).
+---
+
+Un resumen de la prueba de White para heterocedasticidad:
+
+.pseudocode-small[
+
+1\. Regresamos y en x.sub[1], x.sub[2], …, x.sub[k]. Guardo los residuos e.
+
+2\. los residuos al cuadrado de todas las variables explicativas, sus cuadrados e interacciones.
+
+`$$e^2 = \alpha\_0 + \sum\_{h=1}^k \alpha\_h x\_h + \sum\_{j=1}^k \alpha\_{k+j} x\_j^2 + \sum\_{\ell = 1}^{k-1} \sum\_{m = \ell + 1}^k \alpha\_{\ell,m} x\_\ell x\_m + v\_i$$`
+
+3\. Guardo R.sub[e].super[2].
+
+4\. Calculo el estadístico del test para testear H.sub[0]: `\(\alpha_p = 0\)` para todo `\(p\neq0\)`.
+
+]
+---
+
+Al igual que con la prueba de Breusch-Pagan, la estadística de prueba de White es
+
+`$$\text{LM} = n \times R_e^2 \qquad \text{Bajo H}_0,\, \text{LM} \overset{\text{d}}{\sim} \chi_k^2$$`
+
+pero ahora `\(R^2_e\)` proviene de la regresión de `\(e^2\)` sobre las variables explicativas, sus cuadrados y sus interacciones.
+
+`$$e^2 = \alpha\_0 + \underbrace{\sum\_{h=1}^k \alpha\_h x\_h}\_{\text{Expl. variables}} + \underbrace{\sum\_{j=1}^k \alpha\_{k+j} x\_j^2}\_{\text{Squared terms}} + \underbrace{\sum\_{\ell = 1}^{k-1} \sum\_{m = \ell + 1}^k \alpha\_{\ell,m} x\_\ell x\_m}\_{\text{Interactions}} + v\_i$$`
+
+**Nota:** El `\(k\)` (para nuestro `\(\chi_k^2\)`) es igual al número de parámetros estimados en la regresión de arriba (el `\(\alpha_j\)`), excluyendo el intercepto `\(\left( \alpha_0 \right)\)`.
+---
+
+**Nota práctica:** Si una variable es igual a su cuadrado (_ejemplo_, variables binarias), entonces no puede incluirla. La misma regla se aplica a las interacciones.
+---
+
+*Ejemplo:* Considere el modelo.super[†] `\(y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_3 + u\)`
+
+**Paso 1:** Estime el modelo; obtenga los residuos `\((e)\)`.
+
+**Paso 2:** Regrese `\(e^2\)` en las variables explicativas, sus cuadrados e interacciones.
+$$
+`\begin{aligned}
+  e^2 = \
+  &amp; \alpha_0 + \alpha_1 x_1 + \alpha_2 x_2 + \alpha_3 x_3 + \alpha_4 x_1^2 + \alpha_5 x_2^2 + \alpha_6 x_3^2 \\
+  &amp;+ \alpha_7 x_1 x_2 + \alpha_8 x_1 x_3 + \alpha_9 x_2 x_3 + v
+\end{aligned}`
+$$
+
+Guarde el R.super[2] de esta ecuación (llamémoslo, `\(R_e^2\)`).
+
+**Paso 3:** Testeo H.sub[0]: `\(\alpha_1 = \alpha_2 = \cdots = \alpha_9 = 0\)` using `\(\text{LM} = n R^2_e \overset{\text{d}}{\sim} \chi_9^2\)`.
+
+.footnote[
+[†]: Para simplificar la notación, no utilizo los subíndices `\(i\)`.
+]
+---
+
+&lt;img src="07_levantamiento_supuestos_3_files/figure-html/white1-1.svg" style="display: block; margin: auto;" /&gt;
+
+We've already done the White test for this simple linear regression.
+
+$$
+`\begin{aligned}
+ e_i^2 &amp;= \hat{\alpha}_0 + \hat{\alpha}_1 x_{1i} \color{#e64173}{+ \hat{\alpha}_2 x^2_{1i}} &amp; \widehat{\text{LM}} &amp;= 185.8 &amp;\mathit{p}\text{-value} &lt; 0.001
+\end{aligned}`
+$$
+---
+layout: true
+# Heterocedasticidad
+## Preguntas de repaso
+---
+
+--
+
+- **P:** ¿Cuál es la definición de heterocedastidad?
+
+- **P:** ¿Por qué nos preocupa la heterocedastidad?
+
+- **P:** ¿Graficar `\(y\)` contra `\(x\)`, nos dice algo sobre la heterocedastidad?
+
+- **P:** ¿Graficar `\(e\)` contra `\(x\)`, nos dice algo sobre la heterocedastidad?
+
+- **P:** Dado que no podemos observar `\(u_i\)`'s, ¿qué podemos usar para *aprender más* sobre la heterocedasticidad?
+
+- **P:** ¿Qué test se recomiendo para la heterocedasticidad? ¿Por qué?
+
+---
+count: false
+
+- **P:** ¿Cuál es la definición de heterocedastidad?
+--
+
+- **R:**
+&lt;br&gt;.hi[Matemática:] `\(\mathop{\text{Var}} \left( u_i | X \right) \neq \mathop{\text{Var}} \left( u_j | X \right)\)` para algún `\(i\neq j\)`.
+&lt;br&gt;.hi[Palabras:] Hay una relación sistemática entre la varianza de `\(u_i\)` y nuestras variables explicativas.
+---
+count: false
+
+.grey-vlight[
+
+- **P:** ¿Cuál es la definición de heterocedastidad?
+
+]
+
+- **P:** ¿Por qué nos preocupa la heterocedastidad?
+--
+
+- **R:** Esto sesga nuestros errores estándar, arruinando nuestras pruebas estadísticas e intervalos de confianza. Además: MCO ya no es el MELI.
+---
+count: false
+
+.grey-vlight[
+
+- **P:** ¿Cuál es la definición de heterocedastidad?
+
+- **P:** ¿Por qué nos preocupa la heterocedastidad?
+
+]
+
+- **P:** ¿Graficar `\(y\)` contra `\(x\)`, nos dice algo sobre la heterocedastidad?
+--
+
+- **R:** No es exactamente lo que queremos, pero dado que `\(y\)` es una función de `\(x\)` y `\(u\)`, aún puede ser informativo. Si `\(y\)` se vuelve más/menos disperso a medida que cambia `\(x\)`, es probable que tengamos heterocedasticidad.
+---
+count: false
+
+.grey-vlight[
+
+- **P:** ¿Cuál es la definición de heterocedastidad?
+
+- **P:** ¿Por qué nos preocupa la heterocedastidad?
+
+- **P:** ¿Graficar `\(y\)` contra `\(x\)`, nos dice algo sobre la heterocedastidad?
+
+]
+
+- **P:** ¿Graficar `\(e\)` contra `\(x\)`, nos dice algo sobre la heterocedastidad?
+--
+
+- **R:** Si. El margen de `\(e\)` representa su varianza y nos dice algo sobre la varianza de `\(u\)`. Las tendencias en esta varianza, a lo largo de `\(x\)`, sugieren heterocedasticidad.
+---
+count: false
+
+.grey-vlight[
+
+- **P:** ¿Cuál es la definición de heterocedastidad?
+
+- **P:** ¿Por qué nos preocupa la heterocedastidad?
+
+- **P:** ¿Graficar `\(y\)` contra `\(x\)`, nos dice algo sobre la heterocedastidad?
+
+- **P:** ¿Graficar `\(e\)` contra `\(x\)`, nos dice algo sobre la heterocedastidad?
+
+]
+
+- **P:** Dado que no podemos observar `\(u_i\)`'s, ¿qué podemos usar para *aprender más* sobre la heterocedasticidad?
+--
+
+- **R:** Usamos los `\(e_i\)` para predecir/aprender sobre los `\(u_i\)`. Este truco es clave para casi todo lo que hacemos con la prueba/corrección de heterocedasticidad.
+---
+count: false
+
+.grey-vlight[
+
+- **P:** ¿Cuál es la definición de heterocedastidad?
+
+- **P:** ¿Por qué nos preocupa la heterocedastidad?
+
+- **P:** ¿Graficar `\(y\)` contra `\(x\)`, nos dice algo sobre la heterocedastidad?
+
+- **P:** ¿Graficar `\(e\)` contra `\(x\)`, nos dice algo sobre la heterocedastidad?
+
+- **P:** Dado que no podemos observar `\(u_i\)`'s, ¿qué podemos usar para *aprender más* sobre la heterocedasticidad?
+
+]
+
+
+---
+layout: true
+# Heterocedasticidad - ejercicio
+
+---
+class: inverse, middle
+---
+¿En qué subfiguras de abajo probablemente `\(u_i\)` es heterocedástico? Expliquen brevemente. 
+(***Ayuda*** Puede haber más de una.)
+
+**Figura 1**
+&lt;img src="07_levantamiento_supuestos_3_files/figure-html/unnamed-chunk-1-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+
+
+.pink[
+**Respuesta** `\(u_i\)` es probablemente heterocedástico en las subfiguras **1b** y **1c**. Podemos ver tendencias claras (relaciones) entre la varianza de `\(u_i\)` (su dispersión) y `\(x_i\)`.
+]
+
+---
+**1b.** En la presencia de heterocedasticidad, ¿MCO sigue siendo insesgado?
+
+--
+.pink[
+**Respuesta** Sí.
+]
+
+
+**1c.** ¿Qué problemas causa la heterocedasticidad en nuestro setting de MCO?
+--
+
+.pink[
+**Respuesta** La heterocedasticidad hace a (1) MCO ineficiente y (2) sesga la estimación de los errores estándar.
+]
+
+**1d.** Imaginemos que queremos estimar por MCO este modelo
+
+$$
+`\begin{align}
+  y_i = \beta_0 + \beta_1 x_i + u_i \tag{1}
+\end{align}`
+$$
+
+donde `\(x_i\)` es una variable categórica que toma los valores `\(1\)`, `\(2\)`, o `\(3\)`.
+
+Supongamos que sabemos que `\(\mathop{\text{Var}} \left( u_i \middle| x_i = 1 \right) = 15\)` y `\(\mathop{\text{Var}} \left( u_i \middle| x_i = 2 \right) = 15\)`. No conocemos `\(\mathop{\text{Var}} \left( u_i \middle| x_i = 3 \right)\)`, _i.e._, `\(\mathop{\text{Var}} \left( u_i | x_i = 3 \right) = \sigma_3^2\)` para algún parámetro desconocido `\(\sigma_3^2\)`.
+
+¿Qué valor debería tomar `\(\sigma_3^2\)` para que nuestro modelo sea homocedástico?
+
+--
+
+.pink[
+**Respuesta** Para que nuestro modelo sea homocedástico, `\(\sigma_3^2 = 15\)`.
+]
+---
+
+**1e.** *Goldfeld-Quandt* Para probar si los datos que usaremos para estimar la ecuación `\((1)\)` son homocedásticos / heteroscedásticos, haremos una prueba de Goldfeld-Quandt. 
+
+Estimamos `\((1)\)` para el tercio superior del conjunto de datos (ordenados en `\(x\)`) y encontramos SSE.sub [3] = 100. Estimamos `\((1)\)` en el tercio medio y encontramos SSE.sub [2] = 80. Finalmente, estimamos `\((1)\)` en el tercio inferior y encontramos SSE.sub [1] = 70. Cada uno de estos tres grupos tiene 100 observaciones. Realice una prueba de Goldfeld-Quandt. Exprese sus hipótesis, calcule el estadístico de la prueba G-Q, determine el valor *p*, concluya.
+
+***Sugerencia:*** La función `pf(q, df1, df2, lower.tail = F)` calcula la probabilidad de observar un valor de `q` o uno mayor en una distribución `\(F\)` con `df1, df2` grados de libertad numerador y denominador.
+
+--
+
+.pink[
+**Respuesta** La hipotesis para nuestro test es
+
+.b[H.sub[o]]: `\(\sigma_1^2 = \sigma_3^2\)` (homocedasticidad) *vs.* .b[H.sub[a]]: `\(\sigma_1^2 \neq \sigma_3^2\)` (heterocedasticidad)
+
+Para la prueba de Goldfeld-Quandt, probamos esta hipótesis nula utilizando el estadístico de prueba
+
+$$
+`\begin{align}
+   F = \dfrac{SSE_3}{SSE_1} = \dfrac{100}{70} \approx 1.4286
+\end{align}`
+$$
+
+Bajo la hipótesis nula, este estadístico de prueba tiene una distribución `\(F\)` con 98 (= 100-2) grados de libertad en el numerador y denominador. Usando .mono[R] podemos calcular el *p*-valor:
+
+
+```r
+# p-value
+pf(100/70, df1 = 100-2, df2 = 100-2, lower.tail = F)
+```
+
+```
+&gt; [1] 0.03951597
+```
+
+Este valor *p* es menor que 0.05, por lo que rechazamos la hipótesis nula y concluimos que hay evidencia estadísticamente significativa de heterocedasticidad (al nivel del 5 por ciento).
+]
+---
+layout: true
+# Autocorrelación
+
+---
+class: inverse, middle
+
+---
+# Autocorrelación
+## ¿Qué es?
+
+La .hi[autocorrelación] ocurre cuando nuestras perturbaciones están correlacionadas en el tiempo, _es decir_, `\(\mathop{\text{Cov}} \left( u_t,\, u_s \right) \neq 0\)` para `\(t\neq s\)`.
+
+--
+
+Otra forma de pensar: si el *shock* de la perturbación `\(t\)` se correlaciona con los shocks "cercanos" en `\(t-1\)` y `\(t + 1\)`.
+
+--
+
+*Nota:* La **correlación serial** y la **autocorrelación** son lo mismo.
+
+---
+layout: false
+# Autocorrelación
+## MCO
+
+Para **modelos estáticos** o **modelos dinámicos con variables explicativas rezagadas**, en presencia de autocorrelación:
+
+1. MCO proporciona estimaciones .pink[**insesgadas** para los coeficientes].
+
+2. MCO crea .pink[estimaciones **sesgadas** para los errores estándar].
+
+3. MCO es .pink[**ineficiente**.]
+
+*Recuerden:* Las mismas implicancias que la heterocedasticidad.
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

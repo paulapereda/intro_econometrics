@@ -6,21 +6,22 @@ date: "13 de agosto de 2021"
 output:
   xaringan::moon_reader:
     css: ['default', 'metropolis', 'metropolis-fonts', 'my-css.css']
-    # self_contained: true
+    lib_dir: libs
     nature:
+      self_contained: true
+      ratio: 16:9
       highlightStyle: github
       highlightLines: true
       countIncrementalSlides: false
 ---
 class: inverse, middle
 
+
 ```{r Setup, include = F}
-options(htmltools.dir.version = FALSE)
 library(pacman)
 p_load(dplyr, magrittr, knitr)
 
 # Notes directory
-dir_slides <- "~/Dropbox/Teaching - EconometRics/econometrics_I_21/Slides/01_introduccion/"
 
 # Knitr options
 opts_chunk$set(
@@ -34,6 +35,10 @@ opts_chunk$set(
   message = F
 )
 ```
+
+
+
+
 # Preliminares
 ---
 #Sobre los talleres en sí
@@ -434,11 +439,21 @@ class: inverse, middle
 ---
 exclude: true
 
-```{css, echo=FALSE}
-@media print {
-  .has-continuation {
-    display: block;
-  }
-}
+
+
+```{r embed-xaringan, echo=FALSE}
+xaringanExtra::embed_xaringan(
+  url = "https://taller-1-econometria-1.netlify.app",
+  ratio = "16:9"
+)
 ```
 
+```{r metathis, echo=FALSE}
+library(metathis)
+meta() %>%
+  meta_name("github-repo" = "paulapereda/econometrics_I_21") %>% 
+  meta_social(
+    title = "Introducción a R",
+    url = "https://taller-1-econometria-1.netlify.app",
+    image = "https://taller-1-econometria-1.netlify.app/social-card.png")
+```

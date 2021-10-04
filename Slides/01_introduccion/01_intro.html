@@ -4,9 +4,20 @@
     <title>Introducción a R</title>
     <meta charset="utf-8" />
     <meta name="author" content="Paula Pereda (ppereda@correo.um.edu.uy)" />
-    <link href="01_intro_files/remark-css/default.css" rel="stylesheet" />
-    <link href="01_intro_files/remark-css/metropolis.css" rel="stylesheet" />
-    <link href="01_intro_files/remark-css/metropolis-fonts.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/metropolis.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
+    <script src="libs/fitvids-2.1.1/fitvids.min.js"></script>
+    <meta name="github-repo" content="paulapereda/econometrics_I_21"/>
+    <meta name="twitter:title" content="Introducción a R"/>
+    <meta name="twitter:url" content="https://taller-1-econometria-1.netlify.app"/>
+    <meta name="twitter:image" content="https://taller-1-econometria-1.netlify.app/social-card.png"/>
+    <meta name="twitter:card" content="summary"/>
+    <meta property="og:title" content="Introducción a R"/>
+    <meta property="og:url" content="https://taller-1-econometria-1.netlify.app"/>
+    <meta property="og:image" content="https://taller-1-econometria-1.netlify.app/social-card.png"/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:locale" content="en_US"/>
     <link rel="stylesheet" href="my-css.css" type="text/css" />
   </head>
   <body>
@@ -21,6 +32,11 @@ class: center, middle, inverse, title-slide
 ---
 
 class: inverse, middle
+
+
+
+
+
 
 
 # Preliminares
@@ -231,9 +247,9 @@ rnorm(15)
 ```
 
 ```
-&gt;  [1]  0.67460965 -1.62442028 -0.39731153  1.38348724  2.01110720  0.59473224
-&gt;  [7]  0.16629726 -0.04784397 -0.29099958  1.12695616 -0.01120567 -0.20554976
-&gt; [13]  0.58924696  2.09503773  0.42860700
+&gt;  [1] -0.9186628  0.1628480 -0.5013652  1.1338108 -1.2734428  0.1005302
+&gt;  [7] -0.1582956 -1.1329420 -0.4972470  1.2219423 -0.2250672 -1.8447674
+&gt; [13] -1.5944537 -1.0190056 -0.1151433
 ```
 
 Los números que aparecen entre paréntesis rectos ([]) luego de '#&gt;' indican la posición del resultado.
@@ -448,17 +464,18 @@ class: inverse, middle
 ---
 exclude: true
 
-&lt;style type="text/css"&gt;
-@media print {
-  .has-continuation {
-    display: block;
-  }
-}
-&lt;/style&gt;
+
+
+<div class="shareagain" style="min-width:300px;margin:1em auto;">
+<iframe src="https://taller-1-econometria-1.netlify.app" width="1600" height="900" style="border:2px solid currentColor;" loading="lazy" allowfullscreen></iframe>
+<script>fitvids('.shareagain', {players: 'iframe'});</script>
+</div>
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
 <script>var slideshow = remark.create({
+"self_contained": true,
+"ratio": "16:9",
 "highlightStyle": "github",
 "highlightLines": true,
 "countIncrementalSlides": false
