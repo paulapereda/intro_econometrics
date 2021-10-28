@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="" xml:lang="">
   <head>
-    <title>Heterocedasticidad &amp; autocorrelación</title>
+    <title>(Heterocedasticidad &amp; autocorrelación) + Bootstrap</title>
     <meta charset="utf-8" />
     <meta name="author" content="Paula Pereda (ppereda@correo.um.edu.uy)" />
     <link href="07_levantamiento_supuestos_3_files/remark-css-0.0.1/default.css" rel="stylesheet" />
@@ -13,10 +13,10 @@
     <textarea id="source">
 class: center, middle, inverse, title-slide
 
-# Heterocedasticidad &amp; autocorrelación
+# (Heterocedasticidad &amp; autocorrelación) + Bootstrap
 ## Econometría I
 ### Paula Pereda (<a href="mailto:ppereda@correo.um.edu.uy" class="email">ppereda@correo.um.edu.uy</a>)
-### 30 de octubre de 2021
+### 7 de octubre de 2021
 
 ---
 
@@ -181,7 +181,7 @@ $$
 
 ## Consecuencias: Eficiencia
 
-La eficiencia e inferencia de MCOno sobreviven la heterocedasticidad.
+La eficiencia e inferencia de MCO no sobreviven la heterocedasticidad.
 
 - En la presencia de heterocedasticidad, MCO ya no es .hi[MELI].
 
@@ -289,7 +289,7 @@ sigue una distribución `\(F\)` (bajo la hipótesis nula) con `\(n^{\star}-k\)` 
 - Funciona muy bien si conocemos la forma potencia de la heterocedasticidad.
 
 .footnote[
-[†]: Goldfeld and Quandt sugirieron `\(n^{\star}\)` de `\((3/8)n\)`. `\(k\)` da el número de parámetros estimados (_por ejemplo_, `\(\hat{\beta}_j\)`'s).
+[†]: Goldfeld y Quandt sugirieron `\(n^{\star}\)` de `\((3/8)n\)`. `\(k\)` da el número de parámetros estimados (_por ejemplo_, `\(\hat{\beta}_j\)`'s).
 ]
 ---
 
@@ -298,7 +298,7 @@ sigue una distribución `\(F\)` (bajo la hipótesis nula) con `\(n^{\star}-k\)` 
 
 &lt;img src="07_levantamiento_supuestos_3_files/figure-html/gq1b-1.svg" style="display: block; margin: auto;" /&gt;
 
-`\(F_{375,\,375} = \dfrac{\color{#e64173}{\text{SCE}_2 = 18,203.4}}{\color{#314f4f}{\text{SCE}_1 = 1,039.5}} \approx 17.5 \implies\)` *p*-value `\(&lt; 0.001\)`
+`\(F_{375,\,375} = \dfrac{\color{#e64173}{\text{SCE}_2 = 18,203.4}}{\color{#314f4f}{\text{SCE}_1 = 1,039.5}} \approx 17.5 \implies\)` *p*-valor `\(&lt; 0.001\)`
 
 `\(\therefore\)` Rechazamos H.sub[0]: `\(\sigma^2_1 = \sigma^2_2\)` y concluimos que hay evidencia estadísticamente significativa de heterocedasticidad.
 ---
@@ -308,7 +308,7 @@ El problema...
 
 &lt;img src="07_levantamiento_supuestos_3_files/figure-html/gq2-1.svg" style="display: block; margin: auto;" /&gt;
 
-`\(F_{375,\,375} = \dfrac{\color{#e64173}{\text{SCE}_2 = 14,516.8}}{\color{#314f4f}{\text{SCE}_1 = 14,937.1}} \approx 1 \implies\)` *p*-value `\(\approx 0.609\)`
+`\(F_{375,\,375} = \dfrac{\color{#e64173}{\text{SCE}_2 = 14,516.8}}{\color{#314f4f}{\text{SCE}_1 = 14,937.1}} \approx 1 \implies\)` *p*-valor `\(\approx 0.609\)`
 
 `\(\therefore\)` Fallamos en rechazar la hipótesis H.sub[0]: `\(\sigma^2_1 = \sigma^2_2\)` cuando hay heterocedasticidad.
 ---
@@ -369,9 +369,9 @@ layout: true
 
 ---
 
-Acabamos de mencionar que bajo el valor nulo, el estadístico de la prueba B-P se distribuye como una variable aleatoria `\(\ chi^2\)` con `\(k\)` grados de libertad.
+Acabamos de mencionar que bajo el valor nulo, el estadístico de la prueba B-P se distribuye como una variable aleatoria `\(\chi^2\)` con `\(k\)` grados de libertad.
 
-La distribución $\chi ^ 2 $ es solo otro ejemplo de una distribución común (con nombre) (como la distribución Normal, la distribución `\(t\)` y la `\(F\)`).
+La distribución `\(\chi ^ 2\)` es solo otro ejemplo de una distribución común (con nombre) (como la distribución Normal, la distribución `\(t\)` y la `\(F\)`).
 
 ---
 
@@ -451,8 +451,6 @@ Un resumen de la prueba de White para heterocedasticidad:
 
 2\. los residuos al cuadrado de todas las variables explicativas, sus cuadrados e interacciones.
 
-`$$e^2 = \alpha\_0 + \sum\_{h=1}^k \alpha\_h x\_h + \sum\_{j=1}^k \alpha\_{k+j} x\_j^2 + \sum\_{\ell = 1}^{k-1} \sum\_{m = \ell + 1}^k \alpha\_{\ell,m} x\_\ell x\_m + v\_i$$`
-
 3\. Guardo R.sub[e].super[2].
 
 4\. Calculo el estadístico del test para testear H.sub[0]: `\(\alpha_p = 0\)` para todo `\(p\neq0\)`.
@@ -466,9 +464,9 @@ Al igual que con la prueba de Breusch-Pagan, la estadística de prueba de White 
 
 pero ahora `\(R^2_e\)` proviene de la regresión de `\(e^2\)` sobre las variables explicativas, sus cuadrados y sus interacciones.
 
-`$$e^2 = \alpha\_0 + \underbrace{\sum\_{h=1}^k \alpha\_h x\_h}\_{\text{Expl. variables}} + \underbrace{\sum\_{j=1}^k \alpha\_{k+j} x\_j^2}\_{\text{Squared terms}} + \underbrace{\sum\_{\ell = 1}^{k-1} \sum\_{m = \ell + 1}^k \alpha\_{\ell,m} x\_\ell x\_m}\_{\text{Interactions}} + v\_i$$`
 
-**Nota:** El `\(k\)` (para nuestro `\(\chi_k^2\)`) es igual al número de parámetros estimados en la regresión de arriba (el `\(\alpha_j\)`), excluyendo el intercepto `\(\left( \alpha_0 \right)\)`.
+**Nota:** El `\(k\)` (para nuestro `\(\chi_k^2\)`) es igual al número de parámetros estimados en la regresión de arriba 
+(el `\(\alpha_j\)`), excluyendo el intercepto `\(\left( \alpha_0 \right)\)`.
 ---
 
 **Nota práctica:** Si una variable es igual a su cuadrado (_ejemplo_, variables binarias), entonces no puede incluirla. La misma regla se aplica a las interacciones.
@@ -498,7 +496,7 @@ Guarde el R.super[2] de esta ecuación (llamémoslo, `\(R_e^2\)`).
 
 &lt;img src="07_levantamiento_supuestos_3_files/figure-html/white1-1.svg" style="display: block; margin: auto;" /&gt;
 
-We've already done the White test for this simple linear regression.
+Ya hicimos la prueba de White para esta regresión lineal simple.
 
 $$
 `\begin{aligned}
@@ -633,7 +631,7 @@ class: inverse, middle
 
 
 .pink[
-**Respuesta** `\(u_i\)` es probablemente heterocedástico en las subfiguras **1b** y **1c**. Podemos ver tendencias claras (relaciones) entre la varianza de `\(u_i\)` (su dispersión) y `\(x_i\)`.
+**Respuesta:** `\(u_i\)` es probablemente heterocedástico en las subfiguras **1b** y **1c**. Podemos ver tendencias claras (relaciones) entre la varianza de `\(u_i\)` (su dispersión) y `\(x_i\)`.
 ]
 
 ---
@@ -641,7 +639,7 @@ class: inverse, middle
 
 --
 .pink[
-**Respuesta** Sí.
+**Respuesta:** Sí.
 ]
 
 
@@ -698,7 +696,7 @@ Bajo la hipótesis nula, este estadístico de prueba tiene una distribución `\(
 
 
 ```r
-# p-value
+# p-valor
 pf(100/70, df1 = 100-2, df2 = 100-2, lower.tail = F)
 ```
 
@@ -708,6 +706,595 @@ pf(100/70, df1 = 100-2, df2 = 100-2, lower.tail = F)
 
 Este valor *p* es menor que 0.05, por lo que rechazamos la hipótesis nula y concluimos que hay evidencia estadísticamente significativa de heterocedasticidad (al nivel del 5 por ciento).
 ]
+---
+layout: true
+# Viviendo con heterocedasticidad
+---
+class: inverse, middle, true
+---
+
+E¡n la presencia de heterocedasticidad, MCO es
+
+- todavía .hi[insesgado]
+- pero... .hi[ya no es más eficiente]
+
+En promedio, obtenemos la respuesta correcta pero con más ruido (menos precisión).
+&lt;br&gt; *Además:* Nuestros errores estándar están sesgados.
+
+--
+
+**Opciones:**
+
+1. Compruebe la .hi[especificación] de la regresión.
+2. Encuentre un nuevo y más eficiente .hi[estimador insesgado] para `\(\beta_j\)`'s.
+3. Vivir con la ineficiencia de MCO; encontrar un .hi[nuevo estimador de varianza].
+  - Errores estándar
+  - Intervalos de confianza
+  - Pruebas de hipótesis
+---
+layout: true
+# Viviendo con heterocedasticidad
+## Error de especificación
+---
+
+Como hemos comentado, la especificación .pink[&lt;sup&gt; † &lt;/sup&gt;] del modelo de regresión es muy importante para la insesgadez y la eficiencia de su estimador.
+
+**Respuesta \#1:** Asegúrense de que su especificación no cause heterocedasticidad.
+
+.footnote[.pink[†] *Especificación:* Forma funcional y variables incluidas.]
+---
+
+*Ejemplo:* Dejemos que la relacion poblacional sea `$$y_i = \beta_0 + \beta_1 x_i + \beta_2 x_i^2 + u_i$$`
+
+con `\(\mathop{\boldsymbol{E}}\left[ u_i \middle| x_i \right] = 0\)` y `\(\mathop{\text{Var}} \left( u_i \middle| x_i \right) = \sigma^2\)`.
+
+Sin embargo, omitimos `\(x^2\)` y estimamos `$$y_i = \gamma_0 + \gamma_1 x_i + w_i$$`
+
+Entonces `$$w_i = u_i + \beta_2 x_i^2 \implies \mathop{\text{Var}} \left( w_i \right) = f(x_i)$$`
+
+_Es decir_, la varianza de `\(w_i\)` cambia sistemáticamente con `\(x_i\)` (heterocedasticidad).
+---
+
+
+
+.pink[Verdad:] `\(\color{#e64173}{\log\left(y_i\right) = \beta_0 + \beta_1 x_i + u_i}\)`  .slate[**Error de especificación:**] `\(\color{#314f4f}{y_i = \beta_0 + \beta_1 x_i + v_i}\)`
+
+&lt;img src="07_levantamiento_supuestos_3_files/figure-html/spec plot1-1.svg" style="display: block; margin: auto;" /&gt;
+---
+
+.pink[**Verdad:**] `\(\color{#e64173}{\log\left(y_i\right) = \beta_0 + \beta_1 x_i + u_i}\)`  .slate[Error de especificación:] `\(\color{#314f4f}{y_i = \beta_0 + \beta_1 x_i + v_i}\)`
+
+&lt;img src="07_levantamiento_supuestos_3_files/figure-html/spec plot2-1.svg" style="display: block; margin: auto;" /&gt;
+---
+
+De manera más general:
+
+**El problema del error de especificación:** La incorrecta especificación del modelo de regresión puede causar (entre otros problemas).
+
+--
+
+** Solución: ** 💡 Lo hacemos bien bien (_ejemplo_, no omiten `\(x^2\)`).
+
+--
+
+**Nuevos problemas:**
+
+- A menudo no conocemos la especificación *correcta*.
+- Nos gustaría un proceso más formal para abordar la heterocedasticidad.
+
+--
+
+**Conclusión:** La especificación a menudo no "resolverá" la heterocedasticidad.
+&lt;br&gt; Sin embargo, especificar correctamente su modelo sigue siendo realmente importante.
+
+---
+layout: true
+# Viviendo con heterocedasticidad
+## Mínimos Cuadrados Ponderados
+---
+
+Mínimos Cuadrados Ponderados (MCP) presentan otro enfoque.
+
+**Respuesta \#2:** Aumenta la eficiencia ponderando nuestras observaciones.
+
+--
+
+Sea la verdadera relación de población
+
+$$
+`\begin{align}
+  y_i = \beta_0 + \beta_1 x_{i} + u_i \tag{1}
+\end{align}`
+$$
+
+con `\(u_i \sim \mathop{N} \left( 0,\, \sigma_i^2 \right)\)`.
+
+--
+
+Ahora transformamos `\((1)\)` dividiendo cada observación por `\(\sigma_i\)`, _es decir_,
+
+$$
+`\begin{align}
+  \dfrac{y_i}{\sigma_i} &amp;= \beta_0 \dfrac{1}{\sigma_i} + \beta_1 \dfrac{x_{i}}{\sigma_i} + \dfrac{u_i}{\sigma_i} \tag{2}
+\end{align}`
+$$
+
+---
+
+$$
+`\begin{align}
+  y_i &amp;= \beta_0 + \beta_1 x_{i} + u_i \tag{1} \\[1em]
+  \dfrac{y_i}{\sigma_i} &amp;= \beta_0 \dfrac{1}{\sigma_i} + \beta_1 \dfrac{x_{i}}{\sigma_i} + \dfrac{u_i}{\sigma_i} \tag{2}
+\end{align}`
+$$
+
+Mientras que `\((1)\)` sea heterocedástico,
+--
+ `\(\color{#e64173}{(2)}\)` .hi[es homocedástico].
+
+∴ MCO es eficiente e insesgado para estimar los `\(\beta_k\)` en `\((2)\)`!
+
+--
+
+¿Por qué `\((2)\)` es homocedástico?
+
+--
+
+`\(\mathop{\text{Var}} \left( \dfrac{u_i}{\sigma_i} \middle| x_i \right) =\)`
+--
+ `\(\dfrac{1}{\sigma_i^2} \mathop{\text{Var}} \left( u_i \middle| x_i \right) =\)`
+--
+ `\(\dfrac{1}{\sigma_i^2} \sigma_i^2 =\)`
+--
+ `\(1\)`
+---
+
+MCP es genial, pero necesitamos saber `\(\sigma_i^2\)`, que generalmente es poco probable.
+
+Podemos relajar *ligeramente* este requisito, en lugar de requerir
+
+1. `\(\mathop{\text{Var}} \left(u_i | x_i \right) = \sigma_i^2 = \sigma^2h(x_i)\)`
+
+2. Conocemos `\(h(x)\)`.
+
+--
+
+Como antes, transformamos nuestro modelo heterocedástico en un modelo homocedástico. Esta vez dividimos los datos de cada observación &lt;sup&gt;.pink[†]&lt;/sup&gt; por `\(\sqrt{h(x_i)}\)`.
+
+.note[
+.pink[†] Divide *todos* los datos por `\(\sqrt{h(x_i)}\)`, incluida la constante.
+]
+---
+
+$$
+`\begin{align}
+  y_i &amp;= \beta_0 + \beta_1 x_{i} + u_i \tag{1} \\[1em]
+  \dfrac{y_i}{\sqrt{h(x_i)}} &amp;= \beta_0 \dfrac{1}{\sqrt{h(x_i)}} + \beta_1 \dfrac{x_{i}}{\sqrt{h(x_i)}} + \dfrac{u_i}{\sqrt{h(x_i)}} \tag{2}
+\end{align}`
+$$
+con `\(\mathop{\text{Var}} \left( u_i | x_i \right) = \sigma^2 h(x_i)\)`.
+
+--
+
+Ahora chequeemos que `\((2)\)` sea efectivamente homocedástico.
+
+`\(\mathop{\text{Var}} \left( \dfrac{u_i}{\sqrt{h(x_i)}} \middle| x_i \right) =\)`
+--
+ `\(\dfrac{1}{h(x_i)} \mathop{\text{Var}} \left( u_i \middle| x_i \right) =\)`
+--
+ `\(\dfrac{1}{h(x_i)} \sigma^2 h(x_i) =\)`
+--
+ `\(\color{#e64173}{\sigma^2}\)`
+
+.hi[¡Homocedasticidad!]
+---
+
+Los estimadores por .hi[Mínimos Cuadrados Ponderados] (MCP) son una clase especial de los estimadores estimators .hi[Mínimos Cuadrados Generalizados] (MCG) pero enfocados en heterocedasticidad.
+
+--
+
+$$
+  y\_i = \beta\_0 + \beta\_1 x\_{1i} + u\_i \quad \color{#e64173}{\text{ vs. }} \quad
+  \dfrac{y\_i}{\sigma\_i} = \beta\_0 \dfrac{1}{\sigma\_i} + \beta\_1 \dfrac{x\_{1i}}{\sigma\_i} + \dfrac{u\_i}{\sigma\_i}
+$$
+
+*Notas:*
+
+1. MCP **transforma** un modelo heterocedástico en un modelo homocedástico.
+2. **Ponderando:** MCP le da peso menor a las observaciones con mayor varianza de `\(u_i\)`'s.
+3. **Gran requisito:** MCP requiere que *sepamos* `\(\sigma_i^2\)` para cada observación.
+4. MCP es generalmente **inviable**. *Factible* MCGF ofrecen una solución.
+5. Bajo sus supuestos: MCP es el **mejor estimador lineal insesgado**.
+---
+layout: true
+# Viviendo con heterocedasticidad
+## Errores estándar robustos-heterocedásticos
+---
+
+**Respuesta \#3:**
+
+- Ignoramos la ineficiencia de MCO (en presencia de heterocedasticidad).
+- Nos centramos en .hi[estimaciones no sesgadas de nuestros errores estándar].
+- En el proceso: Inferencia correcta 😎
+
+--
+
+**P:** ¿Qué es un error estándar?
+--
+
+&lt;br&gt;**R:**  La .hi[desviación estándar de la distribución de un estimador].
+
+--
+
+Los estimadores (como `\(\hat{\beta}_1\)`) son variables aleatorias, por lo que tienen distribuciones.
+
+Los errores estándar nos dan una idea de cuánta variabilidad hay en nuestro estimador.
+
+---
+
+*Recuerden*: podemos escribir el estimador de MCO para `\(\beta_1\)` como
+
+`$$\hat{\beta}_1 = \beta\_1 + \dfrac{\sum_i \left( x_i - \overline{x} \right) u_i}{\sum_i \left( x_i - \overline{x} \right)^2} = \beta_1 + \dfrac{\sum_i \left( x_i - \overline{x} \right) u_i}{\text{SCT}_x} \tag{3}$$`
+
+--
+
+Sea `\(\mathop{\text{Var}} \left( u_i \middle| x_i \right) = \sigma_i^2\)`.
+
+--
+
+Podemos usar `\((3)\)` para ecsribir la varianza de `\(\hat{\beta}_1\)`, _es decir_,
+
+`$$\mathop{\text{Var}} \left( \hat{\beta}_1 \middle| x_i \right) = \dfrac{\sum_i \left( x_i - \overline{x} \right)^2 \sigma_i^2}{\text{SCT}_x^2} \tag{4}$$`
+---
+
+Si queremos estimaciones insesgadas para nuestros errores estándar, necesitamos una estimación no sesgada para
+
+`$$\dfrac{\sum_i \left( x_i - \overline{x} \right)^2 \sigma_i^2}{\text{SCT}_x^2}$$`
+
+Nuestro viejo amigo (?) Hal White nos dio tal estimador:.pink[&lt;sup&gt;†&lt;/sup&gt;]
+
+`$$\widehat{\mathop{\text{Var}}} \left( \hat{\beta}_1 \right) = \dfrac{\sum_i \left( x_i - \overline{x} \right)^2 e_i^2}{\text{SCT}_x^2}$$`
+
+donde `\(e_i\)` viene de la regresión MCO de interés.
+
+.footnote[
+.pink[†] Esta ecuación específica es para regresión lineal simple.
+]
+---
+
+Nuestra estimación de errores estándar robustos-heterocedásticos para `\(\beta_j\)`.
+
+.hi[Caso 1] Regresión lineal simple, `\(y_i = \beta_0 + \beta_1 x_i + u_i\)`
+
+`$$\widehat{\mathop{\text{Var}}} \left( \hat{\beta}_1 \right) = \dfrac{\sum_i \left( x_i - \overline{x} \right)^2 e_i^2}{\text{SCT}_x^2}$$`
+
+.hi[Caso 2] Regresión lineal múltiple, `\(y_i = \beta_0 + \beta_1 x_{1i} + \cdots + \beta_k x_{ki} + u_i\)`
+
+`$$\widehat{\mathop{\text{Var}}} \left( \hat{\beta}_j \right) = \dfrac{\sum_i \hat{r}_{ij}^2 e_i^2}{\text{SCT}_{x_j^2}}$$`
+
+donde `\(\hat{r}_{ij}\)` denota el i.super[ésimo] residual producto de regresar `\(x_j\)` contra las demás variables explicativas.
+---
+
+Con estos errores estándar, podemos volver hacer inferencia correctamente.
+
+_Ejemplo_, podemos actualizar nuestra fórmula del estadístico `\(t\)` con nuestro nuevo error estándar robusto a la heterocedasticidad.
+
+`$$t = \frac{\text{Estimación Puntual - Valor Hipotetizado}}{\text{Error estándar}}$$`
+---
+layout: false
+class: inverse, middle
+
+# Viviendo con heterocedasticidad
+## Ejemplos
+---
+layout: true
+# Viviendo con heterocedasticidad
+---
+
+## Ejemplos
+
+De nuevo al set de datos de puntajes en pruebas...
+
+
+```r
+# Load packages
+library(Ecdat)
+library(tidyverse)
+# Select y rename desired variables; assign to new dataset; format as tibble
+test_df &lt;- Caschool %&gt;% select(
+  test_score = testscr, ratio = str, income = avginc, enrollment = enrltot
+) %&gt;% as_tibble()
+# View first 2 rows of the dataset
+head(test_df, 2)
+```
+
+```
+&gt; # A tibble: 2 x 4
+&gt;   test_score ratio income enrollment
+&gt;        &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;      &lt;int&gt;
+&gt; 1       691.  17.9  22.7         195
+&gt; 2       661.  21.5   9.82        240
+```
+---
+layout: true
+# Viviendo con heterocedasticidad
+## Ejemplo: Error de especificación
+---
+
+Encontramos evidencia significativa de heterocedasticidad.
+
+Comprobemos si se debió a una especificación incorrecta de nuestro modelo.
+---
+
+Modelo.sub[1]: `\(\text{Puntaje}_i = \beta_0 + \beta_1 \text{Ratio}_i + \beta_2 \text{Ingreso}_i + u_i\)`
+&lt;br&gt;`lm(test_score ~ ratio + income, data = test_df)`
+
+
+&lt;img src="07_levantamiento_supuestos_3_files/figure-html/ex spec1-1.svg" style="display: block; margin: auto;" /&gt;
+---
+
+Modelo.sub[2]: `\(\log\left(\text{Puntaje}_i\right) = \beta_0 + \beta_1 \text{Ratio}_i + \beta_2 \text{Ingreso}_i + u_i\)`
+&lt;br&gt;`lm(log(test_score) ~ ratio + income, data = test_df)`
+
+
+&lt;img src="07_levantamiento_supuestos_3_files/figure-html/ex spec2-1.svg" style="display: block; margin: auto;" /&gt;
+---
+
+Modelo.sub[3]: `\(\log\left(\text{Puntaje}_i\right) = \beta_0 + \beta_1 \text{Ratio}_i + \beta_2 \log\left(\text{Ingreso}_i\right) + u_i\)`
+&lt;br&gt;`lm(log(test_score) ~ ratio + log(income), data = test_df)`
+
+
+&lt;img src="07_levantamiento_supuestos_3_files/figure-html/ex spec3-1.svg" style="display: block; margin: auto;" /&gt;
+---
+
+Testeamos esta nueva especificación con el test de White:
+
+.center[
+Modelo.sub[3]: `\(\log\left(\text{Puntaje}_i\right) = \beta_0 + \beta_1 \text{Ratio}_i + \beta_2 \log\left(\text{Ingreso}_i\right) + u_i\)`
+]
+
+
+
+--
+La regresión para el test de White 
+
+--
+`$$\begin{align}
+  e_i^2 = &amp;\alpha_0 + \alpha_1 \text{Ratio}_i + \alpha_2 \log\left(\text{Ingreso}_i\right) + \alpha_3 \text{Ratio}_i^2 + \alpha_4 \left(\log\left(\text{Ingreso}_i\right)\right)^2 \\
+  &amp;+ \alpha_5 \left(\text{Ratio}_i\times\log\left(\text{Ingreso}_i\right)\right) + v_i
+\end{align}$$`
+--
+con un `\(R_e^2\approx0.029\)`
+--
+ y el estadístico t
+--
+ `\(\widehat{\text{LM}} = n\times R_e^2 \approx 12.2\)`.
+
+--
+
+Bajo H.sub[0], `\(\text{LM}\)` se distribuye
+--
+ `\(\chi_5^2\)`
+--
+ `\(\implies\)` *p*-valor `\(\approx\)` 0.033.
+
+--
+
+∴
+--
+ .hi[Rechazamos H.sub[0].]
+
+--
+ .hi[Conclusión:]
+
+--
+
+Existe evidencia estadísticamente significativa de heterocedasticidad al nivel del cinco por ciento.
+
+---
+
+De acuerdo, intentamos ajustar nuestra especificación, pero todavía hay evidencia de heterocedasticidad.
+
+**Siguiente:** En general, vamos a ir por los errores estándar robustos.
+
+- MCO sigue siendo insesgado para los .hi[coeficientes] (los `\(\beta_j\)`'s)
+
+- los errores estándar robustos son insesgados para los .hi[errores estándar] de los `\(\hat{\beta}_j\)`'s, _es decir_, `\(\sqrt{\mathop{\text{Var}} \left( \hat{\beta}_j \right)}\)`.
+---
+layout: true
+# Viviendo con heterocedasticidad
+## Ejemplos: Errores estándar robustos
+---
+
+Volvemos a nuestro modelo
+
+`$$\text{Puntaje}_i = \beta_0 + \beta_1 \text{Ratio}_i + \beta_2 \text{Ingreso}_i + u_i$$`
+
+Podemos usar el paquete `lfe` en .mono[R] para calcular los errores estándar.
+---
+
+$$ \text{Puntaje}_i = \beta_0 + \beta_1 \text{Ratio}_i + \beta_2 \text{Ingreso}_i + u_i $$
+
+1\. Corremos la regresión con `felm()` (en vez de `lm()`)
+
+```r
+# Load 'lfe' package
+library(lfe)
+# Regress log score on ratio y log income
+test_reg &lt;- felm(test_score ~ ratio + income, data = test_df)
+```
+
+--
+
+*(!)* `felm()` usa la misma sintáxis de regresión que `lm()`.
+---
+
+`$$\text{Puntaje}_i = \beta_0 + \beta_1 \text{Ratio}_i + \beta_2 \text{Ingreso}_i + u_i$$`
+
+2\. Estimamos los errores estándar robustos con la opción `robust = T` en `summary()`
+
+```r
+# Het-robust standard errors con 'robust = T'
+summary(test_reg, robust = T)
+```
+
+```
+&gt;             Estimate Robust s.e t value Pr(&gt;|t|)    
+&gt;  (Intercept) 638.7292     7.3012  87.482   &lt;2e-16 ***
+&gt;  ratio        -0.6487     0.3533  -1.836   0.0671 .  
+&gt;  income        1.8391     0.1147  16.029   &lt;2e-16 ***
+```
+---
+
+Coeficientes y **errores estándar robustos**:
+
+```r
+summary(test_reg, robust = T)
+```
+
+```
+&gt;             Estimate Robust s.e t value Pr(&gt;|t|)    
+&gt;  (Intercept) 638.7292     7.3012  87.482   &lt;2e-16 ***
+&gt;  ratio        -0.6487     0.3533  -1.836   0.0671 .  
+&gt;  income        1.8391     0.1147  16.029   &lt;2e-16 ***
+```
+
+Coeficiencientes y **errores estándar MCO** (asumiendo homocedasticidad):
+
+```r
+summary(test_reg, robust = F)
+```
+
+```
+&gt;              Estimate Std. Error t value Pr(&gt;|t|)    
+&gt;  (Intercept) 638.72915    7.44908  85.746   &lt;2e-16 ***
+&gt;  ratio        -0.64874    0.35440  -1.831   0.0679 .  
+&gt;  income        1.83911    0.09279  19.821   &lt;2e-16 ***
+```
+---
+layout: true
+# Viviendo con heterocedasticidad
+## Ejemplo: MCP
+---
+
+Mencionamos que MCP no es posible muchas veces porque debemos saber la forma funcional de heterocedasticidad
+
+**A**\. `\(\sigma_i^2\)`
+
+o
+
+**B**\. `\(h(x_i)\)`, donde `\(\sigma_i^2 = \sigma^2 h(x_i)\)`
+
+--
+
+*Hay* ocasiones en que podemos conocer `\(h(x_i)\)`.
+---
+
+Imagínense que los individuos de una población tienen perturbaciones homocedásticass.
+
+Sin embargo, en lugar de observar los datos de las personas, observamos (en los datos) los promedios de los grupos (por ejemplo, ciudades, condados, distritos escolares).
+
+Si estos grupos tienen diferentes tamaños, entonces nuestro conjunto de datos será heterocedástico, de una manera predecible.
+
+**Recuerden:** La varianza de la media muestral depende del tamaño de la muestra,
+
+`$$\mathop{\text{Var}} \left( \overline{x} \right) = \dfrac{\sigma_x^2}{n}$$`
+
+--
+
+**Ejemplo:**  Los datos de las pruebas de nuestra escuela se promedian a nivel escolar.
+---
+
+*Ejemplo:*  Los datos de las pruebas de nuestra escuela se promedian a nivel escolar.
+
+Incluso si los estudiantes tuvieran perturbaciones homocedásticas, las escuelas podrían tener perturbaciones heterocedásticas, _por ejemplo_,
+
+**Modelo a nivel individual:** `\(\quad \text{Puntaje}_i = \beta_0 + \beta_1 \text{Ratio}_i + \beta_2 \text{Ingreso}_i + u_i\)`
+
+**Modelo a nivel escuela:** `\(\quad \overline{\text{Puntaje}}_s = \beta_0 + \beta_1 \overline{\text{Ratio}}_s + \beta_2 \overline{\text{Ingreso}}_s + \overline{u}_s\)`
+
+donde el subíndice `\(s\)` denota el una escuela.
+
+`$$\mathop{\text{Var}} \left( \overline{u}_s \right) = \dfrac{\sigma^2}{n_s}$$`
+---
+
+Para MCP, buscamos una función `\(h(x_s)\)` tal que `\(\mathop{\text{Var}} \left( \overline{u}_s | x_s \right) = \sigma^2 h(x_s)\)`.
+
+--
+
+Acabamos de mostrar&lt;sup&gt;.pink[†]&lt;/sup&gt; que `\(\mathop{\text{Var}} \left( \overline{u}_s |x_s \right) = \dfrac{\sigma^2}{n_s}\)`.
+
+.footnote[
+.pink[†] Asumiendo que las perturbaciones individuales son homocedásticos.
+]
+
+--
+
+Entonces, `\(h(x_s) = 1/n_s\)`, donde `\(n_s\)` es eñ número de estudiantes en la escuela `\(s\)`.
+
+--
+
+Para implementar MCP, dividimos los datos de cada observación por `\(1/\sqrt{h(x_s)}\)`, lo que significa que necesitamos multiplicar los datos de cada escuela por `\(\sqrt{n_s}\)`.
+
+--
+
+La variable .mono[enrollment] (inscripción) en el conjunto de datos .mono[test_df] es nuestro `\(n_s\)`.
+
+---
+
+Usando MCP para estimar `\(\text{Puntaje}_i = \beta_0 + \beta_1 \text{Ratio}_i + \beta_2 \text{Ingreso}_i + u_i\)`
+
+**Paso 1:** Multiplica cada variable por `\(1/ \sqrt{h(x_i)} = \sqrt{\text{Enrollment}_i}\)`
+
+
+```r
+# Create MCP transformed variables, multiplying by sqrt of 'pop'
+test_df &lt;- mutate(test_df,
+  test_score_wls = test_score * sqrt(enrollment),
+  ratio_wls      = ratio * sqrt(enrollment),
+  income_wls     = income * sqrt(enrollment),
+  intercept_wls  = 1 * sqrt(enrollment)
+)
+```
+
+Observe que estamos creando una intersección transformada.
+---
+
+Usando MCP para estimar `\(\text{Puntaje}_i = \beta_0 + \beta_1 \text{Ratio}_i + \beta_2 \text{Ingreso}_i + u_i\)`
+
+**Paso 2:** Corremos nuestra regresión de MCP transformados
+
+
+```r
+# MCP regression
+wls_reg &lt;- lm(
+  test_score_wls ~ -1 + intercept_wls + ratio_wls + income_wls,
+  data = test_df
+)
+```
+--
+*Nota:* El `-1` en nuestra regresión le dice a .mono[R] que no agregue una intersección, ya que estamos agregando una intersección transformada (`intercept_wls`).
+---
+
+Las .hi[estimaciones y sus errores estándar de MCP:]
+
+```
+&gt;                Estimate Std. Error t value Pr(&gt;|t|)    
+&gt;  intercept_wls 618.78331    8.26929  74.829   &lt;2e-16 ***
+&gt;  ratio_wls      -0.21314    0.37676  -0.566    0.572    
+&gt;  income_wls      2.26493    0.09065  24.985   &lt;2e-16 ***
+```
+--
+&lt;br&gt;
+Las .hi[estimaciones MCO] y .hi[los errores robustos a la hetorocedasticidad:]
+
+```
+&gt;             Estimate Robust s.e t value Pr(&gt;|t|)    
+&gt;  (Intercept) 638.7292     7.3012  87.482   &lt;2e-16 ***
+&gt;  ratio        -0.6487     0.3533  -1.836   0.0671 .  
+&gt;  income        1.8391     0.1147  16.029   &lt;2e-16 ***
+```
+
 ---
 layout: true
 # Autocorrelación
