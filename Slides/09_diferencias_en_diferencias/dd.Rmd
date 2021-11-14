@@ -1,0 +1,288 @@
+---
+title: "Diferencias en Diferencias"
+subtitle: "Econometría I"
+author: "Paula Pereda (ppereda@correo.um.edu.uy)"
+date: "3 de noviembre de 2021"
+output:
+  xaringan::moon_reader:
+    css: ['default', 'metropolis', 'metropolis-fonts', 'my-css.css']
+    lib_dir: libs
+    nature:
+      ratio: 16:9
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+class: inverse, middle
+
+```{R, setup, include = F}
+
+library(broom)
+library(here)
+library(tidyverse)
+library(lubridate)
+library(latex2exp)
+library(ggplot2)
+library(ggthemes)
+library(viridis)
+library(extrafont)
+library(gridExtra)
+library(kableExtra)
+library(data.table)
+library(dplyr)
+library(lubridate)
+library(magrittr)
+library(knitr)
+library(parallel)
+library(emoGG)
+
+# Define pink color
+red_pink <- "#e64173"
+turquoise <- "#20B2AA"
+grey_light <- "grey70"
+grey_mid <- "grey50"
+grey_dark <- "grey20"
+purple <- "#6A5ACD"
+# Dark slate grey: #314f4f
+# Knitr options
+opts_chunk$set(
+  comment = ">",
+  fig.align = "center",
+  fig.height = 7,
+  fig.width = 10.5,
+  warning = F,
+  message = F
+)
+opts_chunk$set(dev = "svg")
+options(device = function(file, width, height) {
+  svg(tempfile(), width = width, height = height)
+})
+
+# A blank theme for ggplot
+# A blank theme for ggplot
+theme_empty <- theme_bw() + theme(
+  line = element_blank(),
+  rect = element_blank(),
+  strip.text = element_blank(),
+  axis.text = element_blank(),
+  plot.title = element_blank(),
+  axis.title = element_blank(),
+  plot.margin = structure(c(0, 0, -0.5, -1), unit = "lines", valid.unit = 3L, class = "unit"),
+  legend.position = "none"
+)
+theme_simple <- theme_bw() + theme(
+  line = element_blank(),
+  panel.grid = element_blank(),
+  rect = element_blank(),
+  strip.text = element_blank(),
+  axis.text.x = element_text(size = 14),
+  axis.text.y = element_text(size = 14),
+  axis.ticks = element_blank(),
+  axis.line = element_line(
+    color = "grey70",
+    size = 0.25,
+    arrow = arrow(angle = 30, length = unit(0.15, "inches")
+  )),
+  plot.title = element_blank()
+  # plot.margin = structure(c(0, 0, -1, -1), unit = "lines", valid.unit = 3L, class = "unit"),
+)
+theme_axes_math <- theme_void() + theme(
+  axis.title = element_text(size = 22),
+  axis.title.x = element_text(hjust = .95, margin = margin(0.15, 0, 0, 0, unit = "lines")),
+  axis.title.y = element_text(vjust = .95, margin = margin(0, 0.15, 0, 0, unit = "lines")),
+  axis.line = element_line(
+    color = "grey70",
+    size = 0.25,
+    arrow = arrow(angle = 30, length = unit(0.15, "inches")
+  )),
+  plot.margin = structure(c(1, 0, 1, 0), unit = "lines", valid.unit = 3L, class = "unit"),
+  legend.position = "none"
+)
+theme_axes_serif <- theme_void() + theme(
+  axis.title = element_text(size = 22),
+  axis.title.x = element_text(hjust = .95, margin = margin(0.15, 0, 0, 0, unit = "lines")),
+  axis.title.y = element_text(vjust = .95, margin = margin(0, 0.15, 0, 0, unit = "lines")),
+  axis.line = element_line(
+    color = "grey70",
+    size = 0.25,
+    arrow = arrow(angle = 30, length = unit(0.15, "inches")
+  )),
+  plot.margin = structure(c(1, 0, 1, 0), unit = "lines", valid.unit = 3L, class = "unit"),
+  legend.position = "none"
+)
+theme_axes <- theme_void() + theme(
+  axis.title = element_text(size = 18),
+  axis.title.x = element_text(hjust = .95, margin = margin(0.15, 0, 0, 0, unit = "lines")),
+  axis.title.y = element_text(vjust = .95, margin = margin(0, 0.15, 0, 0, unit = "lines")),
+  axis.line = element_line(
+    color = grey_light,
+    size = 0.25,
+    arrow = arrow(angle = 30, length = unit(0.15, "inches")
+  )),
+  plot.margin = structure(c(1, 0, 1, 0), unit = "lines", valid.unit = 3L, class = "unit"),
+  legend.position = "none"
+)
+theme_set(theme_gray(base_size = 20))
+```
+
+
+# Diferencias en Diferencias
+
+---
+# Spoiler Alert
+
+- Las variables instrumentales creíbles y las discontinuidades políticas dramáticas pueden ser difíciles de encontrar; también van a necesitar otras "herramientas de medición" en su kit. 
+
+- El método de .hi-pink[diferencias en diferencias (DD)] reconoce que, en ausencia de una asignación aleatoria, es probable que los grupos de tratamiento y control difieran por muchas razones. Sin embargo, a veces los resultados del tratamiento y del control se mueven en paralelo en ausencia de tratamiento. Cuando lo hacen, la divergencia de una trayectoria posterior al tratamiento con respecto a la tendencia establecida por un de comparación puede indicar un efecto del tratamiento. 
+
+- Revisaremos el método de DD con un estudio de los efectos de la política monetaria en las quiebras bancarias durante la Gran Depresión. 
+
+---
+
+# Recordartorio
+
+## Objetivo de la investigación empírica 
+
+- Típicamente, la investigación económica empírica busca explicar el impacto causal de un efecto $\Rightarrow$ ejemplo: causa de la capacidad de consumir legalmente alcohol sobre la mortalidad 
+
+- El simple análisis de los resultados de la regresión o de las diferencias de medias entre grupos es insuficiente $\Rightarrow$ Los problemas de endogeneidad pueden dar lugar a estimaciones incoherentes o sesgadas 
+
+- Recapitulación de los principales problemas de endogeneidad: 
+             
+    + Sesgo de variable omitida 
+    + Causalidad inversa 
+    + Error de medición 
+    + Etc. etc. 
+             
+- Las diferencias en diferencias son un escenario para aplicar MCO y otras técnicas estadísticas que pueden mitigar los problemas de endogeneidad y ayudar a identificar los vínculos causales 
+
+---
+
+# Un experimento (natural) en Mississippi
+
+## Estudio de caso: La asistencia de la Reserva Federal a los bancos 
+
+- Nos centraremos en la asistencia de la Reserva Federal a los bancos en la Gran Depresión 
+- Sistema de la Reserva Federal de EE.UU. 
+   
+    + Organizado en 12 distritos 
+    + Cada distrito está dirigido por una Fed regional (por ejemplo, la Fed de Atlanta, la Fed de San Luis, etc.) 
+    + Considerable independencia política en cada región (durante este período) 
+- Nos centraremos en la divergencia de políticas entre la Fed de Atlanta y la Fed de San Luis sobre la concesión de créditos durante la Gran Depresión 
+
+    + El 6º distrito de la Fed de Atlanta y el 8º distrito de la Fed de San Luis tienen una frontera en medio de Mississippi 
+
+- Esta divergencia política permitirá la aplicación de una metodología de diferencias en diferencias 
+
+---
+
+# La asistencia de la Reserva Federal a los bancos 
+
+- El colapso de Caldwell 
+             
+    + Caldwell and Company era la mayor cadena bancaria del sur 
+    + Roger Calwell, propietario, también tenía un importante número de negocios no bancarios y otros activos (grandes propiedades de lujo, cuadra de caballos, etc.) 
+    + En noviembre de 1930, la caída del mercado de valores colapsó el imperio     
+    + El contagio resultante llevó a otros bancos a colapsar en Tennessee, Arkansas, Illinois y Carolina del Norte 
+
+- ¿Mantener la estabilidad financiera o crear un riesgo moral? 
+   
+    + Existían actitudes divergentes entre los federales sobre la conveniencia de aumentar los préstamos en este periodo para hacer frente a una crisis de confianza 
+    + Aumentar los préstamos puede crear riesgos de riesgo moral 
+
+- Opiniones políticas divergentes: 
+  
+    + La Fed de Atlanta: A favor de conceder préstamos a los bancos con problemas 
+    + Fed. de San Luis: A favor de restringir el crédito 
+
+---
+
+# Resultados de los cambios políticos 
+
+- Una medida del éxito: Número de bancos que seguían operando el 1 de julio de 1931 
+      
+    + ~8 meses después de la crisis
+    + Fed de San Luis (8º distrito): 132 bancos 
+    + Fed de Atlanta (6º distrito): 121 bancos 
+    + Atlanta tiene un déficit de 11 bancos 
+
+- ¿Fue contraproducente el aumento de los préstamos? 
+- Número de bancos que operaban el 1 de julio de 1930 (antes de la crisis) 
+
+    + Fed de San Luis (8º distrito): 165 bancos 
+    + Fed de Atlanta (6º distrito): 135 bancos 
+    + Atlanta tiene un déficit de 30 bancos 
+
+- El "tratamiento" consiste en ofrecer crédito fácil. Este lenguaje se inspira en los experimentos médicos (¡que es una buena manera de pensar en las diferencias en diferencias!). 
+
+---
+
+# Mundos paralelos
+
+- ¿Cuál es la diferencia en el cambio (DD) entre los dos grupos? 
+     
+    + $\begin{aligned} \delta_{D D} &=\left(Y_{6,1931}-Y_{6,1930}\right)-\left(Y_{8,1931}-Y_{8,1930}\right) \\ &=(121-135)-(132-165) \\ &=-14-(-33)=19  \end{aligned}$
+    + Atlanta tuvo 19 quiebras bancarias menos que San Luis 
+- Conclusión: el aumento del crédito redujo las quiebras bancarias 
+- Lógica subyacente: los dos distritos habrían tenido el mismo número de quiebras bancarias si no fuera por esta diferencia de políticas 
+   
+    + ¡Es una suposición que permite la identificación causal! 
+    + El investigador debe aportar pruebas que respalden esta afirmación 
+- Tendencias paralelas - Normalmente, estas pruebas se aportan con tendencias paralelas
+
+---
+# Efecto estimado del tratamiento 
+
+- Supuesto subyacente: Los dos distritos habrían tenido el mismo número de fracasos si no fuera por esta diferencia política 
+
+```{r, echo = F, fig.height = 4.5}
+data("banks", package = "masteringmetrics")
+
+banks <- banks %>%
+  filter(month(date) == 7L, mday(date) == 1L) %>%
+  mutate(year = year(date)) %>%
+  select(year, matches("bi[ob][68]"))
+
+
+banks <- banks %>%
+  arrange(year) %>%
+  mutate(diff86 = bib8[year == 1930] - bib6[year == 1930],
+         counterfactual = if_else(year >= 1930, bib8 - diff86, NA_integer_)) %>%
+  select(-diff86)
+
+select(banks, year, bib8, bib6, counterfactual) %>%
+  gather(variable, value, -year, na.rm = TRUE) %>%
+  mutate(variable = recode(variable, 
+                           bib8 = "Distrito 8",
+                           bib6 = "Distrito 6",
+                           counterfactual = "Contrafactual")) %>%
+  ggplot(aes(x = year, y = value, colour = variable)) +
+  geom_point(size = 2) +
+  geom_line(size = 1) +
+  scale_color_manual(values = c(grey_dark, purple, red_pink)) +
+  ylab("Número de bancos en actividad") +
+  xlab("Año") +
+  labs(color = "") +
+  theme_simple
+
+```
+
+---
+
+# Implementación de la regresión DD
+
+- Una regresión DD tiene 3 ingredientes clave: 
+
+    + Una variable binaria para saber si una observación pertenece a la muestra tratada, $TREAT_i$ 
+       + Esto controla el efecto fijo transversal 
+    + Una variable binaria para saber si una observación pertenece al período de tiempo posterior al tratamiento, $POST_t$
+       + Esto controla los efectos fijos del período de tiempo 
+    + Un término de interacción, $T R E A T_{i} * P O S T_{t}$
+       + Este es nuestro estimador causal de diferencia en diferencias 
+
+En nuestro ejemplo: $\operatorname{Bank} \#_{i, t}=\beta_{0}+\beta_{1} T R E A T_{i}+\beta_{2} P O S T_{t}+\beta_{3} T R E A T_{i} * P O S T_{t}+\varepsilon_{i, t}$
+
+- Para interpretar si hay un impacto causal, examinamos el coeficiente $\beta_3$
+  
+    + En nuestro ejemplo, si la provisión de crédito previene las quiebras bancarias, $\beta_3$ debería ser positivo y estadísticamente significativo 
+    + Cuando Angrist y Pitschke corren esta regresión, encuentran que este es el caso (aunque $\beta_3$ es sólo marginalmente significativo, dado el pequeño tamaño de la muestra) 

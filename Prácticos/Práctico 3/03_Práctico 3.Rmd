@@ -1,0 +1,140 @@
+---
+title: "Set de problemas 3"
+subtitle: "Repaso"
+author: "Econometría I"
+date: "<br>A entregar el domingo 14 de noviembre"
+output:
+  xaringan::moon_reader:
+    css: ['default', 'metropolis', 'metropolis-fonts', 'my-css.css']
+    nature:
+      ratio: '8.5:11'
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+class: clear
+
+```{R, setup, include = F}
+# Packages
+library(pacman)
+p_load(
+  ggplot2, gridExtra, ggthemes, latex2exp, kableExtra,
+  tidyverse, broom, knitr, magrittr
+)
+# Colors
+red_pink <- "#e64173"
+turquoise <- "#20B2AA"
+grey_light <- "grey70"
+grey_mid <- "grey50"
+grey_dark <- "grey20"
+# Themes
+theme_axes_y <- theme_void() + theme(
+  text = element_text(family = "sans"),
+  axis.title = element_text(size = 11),
+  plot.title = element_text(size = 11, hjust = 0.5),
+  axis.title.x = element_text(hjust = .95, margin = margin(0.15, 0, 0, 0, unit = "lines")),
+  axis.title.y = element_text(vjust = .95, margin = margin(0, -0.2, 0, 0, unit = "lines")),
+  axis.text.y = element_text(
+    size = 10, angle = 0, hjust = 0.9, vjust = 0.5,
+    margin = margin(0, 0.4, 0, 0, unit = "lines")
+  ),
+  axis.line = element_line(
+    color = grey_light,
+    size = 0.25,
+    arrow = arrow(angle = 30, length = unit(0.07, "inches")
+  )),
+  plot.margin = structure(c(1, 0, 1, 0), unit = "lines", valid.unit = 3L, class = "unit"),
+  legend.position = "none"
+)
+theme_axes_x <- theme_void() + theme(
+  text = element_text(family = "sans"),
+  axis.title = element_text(size = 11),
+  plot.title = element_text(size = 11, hjust = 0.5),
+  axis.title.x = element_text(hjust = .95, margin = margin(0.15, 0, 0, 0, unit = "lines")),
+  axis.title.y = element_text(vjust = .95, margin = margin(0, -0.2, 0, 0, unit = "lines")),
+  axis.text.x = element_text(
+    size = 10, angle = 0, hjust = 0.9, vjust = 0.5,
+    margin = margin(0, 0.4, 0, 0, unit = "lines")
+  ),
+  axis.line = element_line(
+    color = grey_light,
+    size = 0.25,
+    arrow = arrow(angle = 30, length = unit(0.07, "inches")
+  )),
+  plot.margin = structure(c(1, 0, 1, 0), unit = "lines", valid.unit = 3L, class = "unit"),
+  legend.position = "none"
+)
+theme_set(theme_gray(base_size = 11))
+# Knitr options
+opts_chunk$set(
+  comment = "#>",
+  fig.align = "center",
+  warning = F,
+  message = F
+)
+```
+
+Se presenta el primer práctico de Econometría I. El mismo trata conceptos introductorios de Mínimos Cuadrados Ordinarios.
+
+.hi-pink[**Regla general de los prácticos:**] La entrega debe realizarse en un archivo .pdf realizado con cualquier programa de computadora (MS Word, Open Office, $\LaTeX$ o letra a mano .hi-pink[prolija y legible]. 
+
+El nombre del archivo debe contener los **apellidos de los integrantes del grupo (únicamente)** y debe ser enviado al siguiente correo: .pink[ppereda@correo.um.edu.uy]. Esperar confirmación de recepción. Grupos de tres o menos integrantes.
+
+## Problema 1
+
+Preguntas y comentarios conceptuales. Responda en forma breve y concisa. 
+
+**1a.** Explique brevemente la intuición de la prueba de cambio de régimen de Chow. ¿En que se diferencia de las pruebas CUSUM y CUSUMQ?
+
+**1b.** Muestre $\mathrm{X}^{\mathrm{T}} \hat{\varepsilon}=0$. ¿Qué implicancia se deriva si el modelo tiene constante?
+
+**1c.** Sea el modelo $y_{i}=x_{i} \beta_{1}+x_{i}^{2} \beta_{2}+\varepsilon_{i} . \quad E\left(\varepsilon_{i} \mid x_{i}\right)=0$ 
+
+Donde $y$ es el salario por hora en pesos, $x$ es la edad. Explique cómo realizaría la prueba de hipótesis que el salario esperado para un trabajador de 30 años es 100 pesos por hora. 
+
+**1d.** Considere el siguiente modelo donde aparece como variable explicativa la variable dependiente rezagada:
+
+$y_{t}=x_{t} \beta+y_{t-1} \gamma+\varepsilon_{t}$
+con $\quad \varepsilon_{t}=u_{t}+\theta u_{t-1}$	
+
+$u_t$ es un ruido blanco.  Discuta si existe endogeneidad. Justifique.
+
+**1e.** Usted sospecha que alguna variable explicativa del modelo de regresión lineal es endógena. Describa paso a paso cómo aplicaría una prueba estadística al respecto.
+
+## Problema 2
+
+Tres economistas analizan los determinantes del salario de los trabajadores, pero toman en cuenta variables un tanto distintas. Las variables que  consideran son: $E$, ingresos salariales por hora; $A$, años de educación; $M$, puntaje en una prueba de matemática; $L$, puntaje en una prueba de letras. Los puntajes en las pruebas  de matemática y letras pueden variar entre 0 y 100. A su vez, se define $LE$ como el logaritmo neperiano de $E$. Estos tres economistas poseen datos para 104 trabajadores. Ahora bien, cada economista trabaja de forma independiente y formula su propio modelo. A continuación se presentan las estimaciones de los modelos de los 3 economistas (errores estándar entre paréntesis):
+
+Economista 1
+
+$\overline{L E}=\begin{array}{c}2,02 \\ (1,81)\end{array}+\begin{array}{l}0,063 A \\ (0,007)\end{array}+\begin{array}{l}0,0044 M \\ (0,0011)\end{array}+\begin{array}{l}0,0026 L \\ (0,001)\end{array}$
+
+$SCR = 2000$
+
+---
+class: clear
+
+Los economistas 2 y 3 definen y hacen uso de una nueva variable, puntaje $P$, que es el promedio simple de $M$ y $L$. 
+
+Economista 2   
+
+$\overline{LE}=\begin{array}{c}1,72 \\ (1,78)\end{array}+\begin{array}{c}0,050 A \\ (0,005)\end{array}+\begin{array}{c}0,068 P \\ (0,001)\end{array}$
+
+$SCR = 2045$ 
+
+Economista 3         
+
+$\overline{L E}=\begin{array}{c}2,02 \\ (1,81)\end{array}+\begin{array}{c}0,063 A \\ (0,007)\end{array}+\begin{array}{c}0,0088 P \\ (0,0022)\end{array}-\begin{array}{c}0,0018 L \\ (0,0012)\end{array}$
+
+$SCR  = 2000$ 
+
+
+**2.a** Determine la significancia de los coeficientes para el modelo 1. También testee si dicho modelo tiene significancia conjunta.
+
+**2.b** Muestre que los modelos 2 y 3 son una versión restringida del modelo 1. Determine la restricción para cada caso.
+
+**2.c** Realice una prueba $F$ sobre las restricciones encontradas en la parte anterior.
+
+**2.d** Los economistas quieren determinar si los resultados en las pruebas de matemática tienen un impacto significativamente mayor sobre los ingresos salariales por hora que los resultados de letras. Realice una prueba de hipótesis para determinar si existe una diferencia significativa entre el impacto de ambas pruebas (plantee la hipótesis nula, la alternativa y el estadístico correspondiente).
+
+**2.e** ¿Qué ocurre con el $R_2$ si se agregan variables? Demuestre.

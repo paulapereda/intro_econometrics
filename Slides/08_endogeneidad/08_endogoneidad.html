@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Endogeneidad</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Paula Pereda (ppereda@correo.um.edu.uy)" />
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/metropolis.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="my-css.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Endogeneidad
+## Econometría I
+### Paula Pereda (<a href="mailto:ppereda@correo.um.edu.uy" class="email">ppereda@correo.um.edu.uy</a>)
+### 29 de octubre de 2021
+
+---
+
+class: inverse, middle
+
+
+
+
+# Causalidad
+
+---
+
+## Intro
+
+La mayoría de las tareas de la econometría se reducen a uno de los dos objetivos:
+
+$$
+`\begin{align}
+  y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_k x_k + u
+\end{align}`
+$$
+
+--
+
+1. .hi-purple[Predicción:] Precisión y fiabilidad .purple[predicción/pronóstico] `\(\color{#6A5ACD}{y}\)` utilizando un conjunto de variables explicativas-no es necesario que sean `\(x_1\)` hasta `\(x_k\)`. Se centra en `\(\color{#6A5ACD}{hat{y}}\)`. `\(\beta_j\)` no importa realmente.
+
+--
+
+1. .hi[Estimación causal:].super[.pink[†]] La estimación del proceso real de generación de datos-aprendizaje del modelo poblacional verdadero que explica .pink[cómo] `\(\color{#e64173}{y}\)` .pink[cambia cuando cambiamos] `\(\color{#e64173}{x_j}\)`-se centra en `\(\color{#e64173}{beta_j}\)`. La precisión de `\(\hat{y}\)` no es importante.
+
+.footnote[
+.pink[†] Usualmente llamado *identificación causal*.
+]
+
+---
+name: challenges
+
+## Los desafíos
+
+Como hemos visto hasta ahora, determinar y estimar el verdadero modelo puede ser bastante difícil, tanto en términos .purple[prácticos] como .pink[econométricos].
+
+--
+
+.pull-left[.purple[
+**Desafíos prácticos**
+
+- ¿Qué variables?
+- ¿Qué forma(s) funcional(es)?
+- ¿Existen datos? ¿Cuántos?
+- ¿Es representativa la muestra?
+]]
+
+--
+
+.pull-right[.pink[
+**Desafíos econométricos**
+
+- Sesgo de variable omitida
+- Causalidad inversa
+- Error de medición
+- ¿Qué precisión podemos/debemos tener?
+]]
+
+--
+
+Muchos de estos retos se relacionan con la .hi-slate[exogeneidad], _es decir_, `\(\color{#314f4f}{\mathop{\boldsymbol{E}}\left[ u_i | X \right] = 0}\)`.
+
+
+---
+
+## Es complicado
+
+Ocasionalmente, las relaciones .hi[*causales*] se pueden entender simplemente, _por ejemplo_,
+
+--
+
+- ¿Qué ha .pink[provocado] el incendio forestal?
+- .pink[¿Cómo] llegó este bebé aquí?
+
+--
+
+En general, las relaciones .hi[*causales*] son complejas y difíciles de responder, _por ejemplo_,
+
+--
+
+- ¿Qué causa el crecimiento de algunos países y el declive de otros?
+- ¿Qué .pink[causó] la elección del presidente Trump en 2016?
+- .pink[¿Cómo] afecta el número de policías a la delincuencia?
+- ¿Cuál es el efecto de una mejor calidad del aire en los resultados de los exámenes?
+- ¿Las penas de prisión más largas disminuyen la delincuencia?
+- ¿Cómo afectó la legalización del cannabis a la salud mental y a la adicción a los opioides?
+
+
+---
+
+## Correlación ≠ Causalidad
+
+Es probable que hayan escuchado el dicho
+
+&gt; Correlación no es causalidad.
+
+El refrán sólo señala que hay violaciones de la exogeneidad.
+
+--
+
+Aunque la correlación no es causalidad, .hi [la causalidad *requiere* correlación].
+
+--
+
+.hi-slate[Nueva frase:]
+
+&gt; Correlación más exogeneidad es causalidad.
+
+---
+layout: false
+class: clear, middle
+
+Veamos algunos ejemplos.
+---
+layout: true
+# Causalidad
+---
+name: fertilizer
+
+## Ejemplo: El efecto causal del abono.super[.pink[†]]
+
+.footnote[
+.pink[†] Muchos de los primeros estudios estadísticos y econométricos incluían ensayos de campo agrícolas.
+]
+
+Supongamos que queremos conocer el efecto causal del fertilizante sobre el rendimiento del maíz.
+
+--
+
+**P:** ¿Podríamos simplemente hacer una regresión del rendimiento en función del fertilizante?
+--
+&lt;br&gt;**R:** Probablemente no (si queremos el efecto causal).
+--
+&lt;br&gt;&lt;br&gt;**P:** ¿Por qué no?
+--
+&lt;br&gt;**R:** Sesgo de variable omitida: Los agricultores pueden aplicar menos fertilizantes en zonas que ya son peores en otras dimensiones que afectan al rendimiento (suelo, pendiente, agua).&lt;br&gt;.pink[Viola *todo lo demás igual* (exogeneidad). Resultados sesgados y/o espurios].
+--
+&lt;br&gt;&lt;br&gt;**P:** Entonces, ¿qué *deberíamos* hacer?
+--
+&lt;br&gt;**R:** .hi[¡Hacer un experimento!]
+--
+ 💩
+---
+
+## Ejemplo: El efecto causal del fertilizante
+
+Los experimentos aleatorios nos ayudan a mantener *todo lo demás igual* (exogeneidad).
+
+--
+
+A menudo llamamos a estos experimentos .hi[*randomized control trials*] (RCT)..super[.pink[†]]
+
+.footnote[
+.pink[†] La econometría (y la estadística) toma prestado este lenguaje de la bioestadística y los ensayos farmacéuticos.
+]
+
+--
+
+Imaginemos un RCT en el que tenemos dos grupos:
+
+- .hi-slate[Tratamiento:] Aplicamos fertilizante.
+- .hi-slate[Control:] No aplicamos fertilizante.
+
+--
+
+Al distribuir aleatoriamente las parcelas en .hi-slate[tratamiento] o .hi-slate[control], incluiremos, en promedio, todos los tipos de tierra (suelo, pendiente, agua, *etc.*) en ambos grupos.
+
+--
+
+*¡Todo lo demás es igual*!
+---
+class: clear
+
+.hi-slate[54 parcelas de igual tamaño]
+&lt;img src="08_endogoneidad_files/figure-html/fertilizer_plot1-1.svg" style="display: block; margin: auto;" /&gt;
+---
+class: clear
+count: false
+
+.hi-slate[54 parcelas de igual tamaño] .hi[de distinta calidad]
+&lt;img src="08_endogoneidad_files/figure-html/fertilizer_plot2-1.svg" style="display: block; margin: auto;" /&gt;
+---
+class: clear
+count: false
+
+.hi-slate[54 parcelas de igual tamaño] .hi[de distinta calidad] .hi-orange[más el tratamiento asignado al azar]
+&lt;img src="08_endogoneidad_files/figure-html/fertilizer_plot3_1-1.svg" style="display: block; margin: auto;" /&gt;
+---
+class: clear
+count: false
+
+.hi-slate[54 parcelas de igual tamaño] .hi[de distinta calidad] .hi-orange[más el tratamiento asignado al azar]
+&lt;img src="08_endogoneidad_files/figure-html/fertilizer_plot3_2-1.svg" style="display: block; margin: auto;" /&gt;
+---
+class: clear
+count: false
+
+.hi-slate[54 parcelas de igual tamaño] .hi[de distinta calidad] .hi-orange[más el tratamiento asignado al azar]
+&lt;img src="08_endogoneidad_files/figure-html/fertilizer_plot3_3-1.svg" style="display: block; margin: auto;" /&gt;
+---
+class: clear
+count: false
+
+.hi-slate[54 parcelas de igual tamaño] .hi[de distinta calidad] .hi-orange[más el tratamiento asignado al azar]
+&lt;img src="08_endogoneidad_files/figure-html/fertilizer_plot3_4-1.svg" style="display: block; margin: auto;" /&gt;
+---
+class: clear
+count: false
+
+.hi-slate[54 parcelas de igual tamaño] .hi[de distinta calidad] .hi-orange[más el tratamiento asignado al azar]
+&lt;img src="08_endogoneidad_files/figure-html/fertilizer_plot3_5-1.svg" style="display: block; margin: auto;" /&gt;
+---
+class: clear
+count: false
+
+.hi-slate[54 parcelas de igual tamaño] .hi[de distinta calidad] .hi-orange[más el tratamiento asignado al azar]
+&lt;img src="08_endogoneidad_files/figure-html/fertilizer_plot3_6-1.svg" style="display: block; margin: auto;" /&gt;
+---
+class: clear
+count: false
+
+.hi-slate[54 parcelas de igual tamaño] .hi[de distinta calidad] .hi-orange[más el tratamiento asignado al azar]
+&lt;img src="08_endogoneidad_files/figure-html/fertilizer_plot3_7-1.svg" style="display: block; margin: auto;" /&gt;
+---
+class: clear
+count: false
+
+.hi-slate[54 parcelas de igual tamaño] .hi[de distinta calidad] .hi-orange[más el tratamiento asignado al azar]
+&lt;img src="08_endogoneidad_files/figure-html/fertilizer_plot3_8-1.svg" style="display: block; margin: auto;" /&gt;
+---
+class: clear
+count: false
+
+.hi-slate[54 parcelas de igual tamaño] .hi[de distinta calidad] .hi-orange[más el tratamiento asignado al azar]
+&lt;img src="08_endogoneidad_files/figure-html/fertilizer_plot3_9-1.svg" style="display: block; margin: auto;" /&gt;
+---
+class: clear
+count: false
+
+.hi-slate[54 parcelas de igual tamaño] .hi[de distinta calidad] .hi-orange[más el tratamiento asignado al azar]
+&lt;img src="08_endogoneidad_files/figure-html/fertilizer_plot3_10-1.svg" style="display: block; margin: auto;" /&gt;
+---
+class: clear
+count: false
+
+.hi-slate[54 parcelas de igual tamaño] .hi[de distinta calidad] .hi-orange[más el tratamiento asignado al azar]
+&lt;img src="08_endogoneidad_files/figure-html/fertilizer_plot3_11-1.svg" style="display: block; margin: auto;" /&gt;
+---
+class: clear
+count: false
+
+.hi-slate[54 parcelas de igual tamaño] .hi[de distinta calidad] .hi-orange[más el tratamiento asignado al azar]
+&lt;img src="08_endogoneidad_files/figure-html/fertilizer_plot3_12-1.svg" style="display: block; margin: auto;" /&gt;
+---
+
+## Ejemplo: El efecto causal del fertilizante
+
+Podemos estimar el .hi[efecto causal] del fertilizante sobre el rendimiento de los cultivos comparando el rendimiento medio del grupo de tratamiento (💩) con el grupo de control (sin 💩).
+
+$$
+`\begin{align}
+  \overline{\text{Rendimiento}}_\text{Tratamiento} - \overline{\text{Rendimiento}}_\text{Control}
+\end{align}`
+$$
+
+--
+
+Como alternativa, podemos utilizar la regresión
+
+--
+
+$$
+`\begin{align}
+  \text{Rendimiento}_i = \beta_0 + \beta_1 \text{Trt}_i + u_i \tag{1}
+\end{align}`
+$$
+
+donde `\(\text{Trt}_i\)` es una variable binaria (=1 si la parcela `\(i\)` recibió el tratamiento de fertilización).
+
+--
+
+**P:** ¿Debemos esperar que `\((1)\)` satisfaga la exogeneidad? ¿Por qué?
+--
+&lt;br&gt;**R:** Por término medio, .hi[la asignación aleatoria del tratamiento debe equilibrar] trt. y control en las demás dimensiones que afectan al rendimiento (suelo, pendiente, agua).
+---
+layout: true
+# Causalidad
+## Ejemplo: Retornos a la educación
+---
+name: returns
+
+Los economistas laborales, los responsables políticos, los padres y los estudiantes están interesados en el *retorno monetario de la educación*.
+
+--
+
+.hi-slate[Experimento mental:]
+- Selecciona al azar un individuo.
+- Dale un año más de educación.
+- ¿Cuánto aumentan sus ingresos?
+
+Este cambio en los ingresos nos da el .hi-slate[efecto causal] de la educación sobre los ingresos.
+---
+
+**P:** ¿Podríamos simplemente hacer una regresión de los ingresos en función de la educación?
+--
+&lt;br&gt;**R:** De nuevo, probablemente no si queremos el verdadero efecto causal.
+
+--
+1. La gente *elige* la educación en función de muchos factores, *por ejemplo*, la capacidad.
+1. La educación probablemente reduzca la experiencia (tiempo fuera de la fuerza de trabajo).
+1. La educación es .hi[*endógena*] (viola la *exogeneidad*).
+
+--
+
+El punto (2) anterior también ilustra la dificultad de aprender sobre la educación manteniendo todo lo demás constante.
+
+Muchas variables importantes tienen el mismo reto: género, raza, ingresos.
+---
+
+**P:** Entonces, ¿cómo podemos estimar los rendimientos de la educación?
+
+--
+
+.hi-slate[Opción 1:] Correr un .hi[experimento].
+
+--
+
+- Aleatoriamente .pink[asignar educación] (podría ser difícil).
+- Aleatoriamente .pink[fomentar la educación] (podría funcionar).
+- Aleatoriamente .pink[asignar programas] que afecten a la educación (*por ejemplo, tutorías).
+
+--
+
+.hi-slate[Opción 2:] Busque un .hi-purple[*experimento natural*]-una política o accidente en la sociedad que haya aumentado arbitrariamente la educación de un subconjunto de personas.
+
+--
+
+- Admisiones .purple[límites]
+- .purple[lotería] inscripción y/o capacidad .purple[limitaciones]
+---
+layout: true
+# Causalidad
+---
+name: real
+
+## Experimentos reales
+
+En ambos ejemplos se consideran .hi-slate[experimentos reales] que aíslan los efectos causales.
+
+.hi-slate[Características]
+
+- .purple[Realizable]-podemos realmente (potencialmente) realizar el experimento.
+- .morado[Comparar individuos] aleatorizados en el tratamiento con individuos aleatorizados en el control.
+- .purple[Requiere una "buena" aleatorización] para obtener *todo lo demás igual* (exogeneidad).
+
+--
+
+*Nota:* Los resultados de su experimento son sólo tan buenos como su aleatorización.
+---
+class: clear
+count: false
+
+.hi-slate[Una aleatorización desafortunada]
+&lt;img src="08_endogoneidad_files/figure-html/fertilizer_plot3_bad-1.svg" style="display: block; margin: auto;" /&gt;
+---
+layout: true
+# Causalidad
+## El experimento ideal
+---
+name: ideal
+
+El .hi[experimento ideal] sería sutilmente diferente.
+
+En lugar de comparar unidades aleatorizadas como .pink[tratamiento] frente a .pink[control], el experimento ideal compararía el tratamiento y el control .hi[para la misma y exacta unidad].
+
+--
+
+$$
+`\begin{align}
+  y_{\text{Tratamiento},i} - y_{\text{Control},i}
+\end{align}`
+$$
+
+--
+
+que escribiremos (para simplificar) como
+
+$$
+`\begin{align}
+  y_{1,i} - y_{0,i}
+\end{align}`
+$$
+
+--
+
+Este .pink[*experimento ideal*] es claramente inviable.super[.pink[†]], pero crea una bonita notación para la causalidad (el modelo causal de Rubin/marco de resultados potenciales de Neyman).
+
+.footnote[
+.pink[†] Sin (1) habilidades similares a las de Dios y múltiples universos o (2) una máquina del tiempo.
+]
+---
+
+.pull-left[
+The *ideal* data for 10 people
+
+```
+&gt;     i trt  y1i  y0i
+&gt; 1   1   1 5.01 2.56
+&gt; 2   2   1 8.85 2.53
+&gt; 3   3   1 6.31 2.67
+&gt; 4   4   1 5.97 2.79
+&gt; 5   5   1 7.61 4.34
+&gt; 6   6   0 7.63 4.15
+&gt; 7   7   0 4.75 0.56
+&gt; 8   8   0 5.77 3.52
+&gt; 9   9   0 7.47 4.49
+&gt; 10 10   0 7.79 1.40
+```
+]
+
+--
+
+.pull-right[
+Calcula el efecto causal del trt.
+$$
+`\begin{align}
+  \tau_i = y_{1,i} -  y_{0,i}
+\end{align}`
+$$
+para cada individuo `\(i\)`.
+]
+---
+count: false
+
+.pull-left[
+Los datos *ideales* para 10 personas
+
+```
+&gt;     i trt  y1i  y0i effect_i
+&gt; 1   1   1 5.01 2.56     2.45
+&gt; 2   2   1 8.85 2.53     6.32
+&gt; 3   3   1 6.31 2.67     3.64
+&gt; 4   4   1 5.97 2.79     3.18
+&gt; 5   5   1 7.61 4.34     3.27
+&gt; 6   6   0 7.63 4.15     3.48
+&gt; 7   7   0 4.75 0.56     4.19
+&gt; 8   8   0 5.77 3.52     2.25
+&gt; 9   9   0 7.47 4.49     2.98
+&gt; 10 10   0 7.79 1.40     6.39
+```
+]
+
+.pull-right[
+Calcula el efecto causal del trt.
+$$
+`\begin{align}
+  \tau_i = y_{1,i} -  y_{0,i}
+\end{align}`
+$$
+para cada individuo `\(i\)`.
+]
+---
+count: false
+
+.pull-left[
+Los datos *ideales* para 10 personas
+
+```
+&gt;     i trt  y1i  y0i effect_i
+&gt; 1   1   1 5.01 2.56     2.45
+&gt; 2   2   1 8.85 2.53     6.32
+&gt; 3   3   1 6.31 2.67     3.64
+&gt; 4   4   1 5.97 2.79     3.18
+&gt; 5   5   1 7.61 4.34     3.27
+&gt; 6   6   0 7.63 4.15     3.48
+&gt; 7   7   0 4.75 0.56     4.19
+&gt; 8   8   0 5.77 3.52     2.25
+&gt; 9   9   0 7.47 4.49     2.98
+&gt; 10 10   0 7.79 1.40     6.39
+```
+]
+
+.pull-right[
+Calcula el efecto causal del trt.
+$$
+`\begin{align}
+  \tau_i = y_{1,i} -  y_{0,i}
+\end{align}`
+$$
+para cada individuo `\(i\)`.
+
+La media `\(\tau_i\)` es el&lt;br&gt;.hi[average treatment effect] (.pink[ATE]).
+
+Entonces, `\(\color{#e64173}{\overline{\tau} = 3.82}\)`
+]
+
+---
+
+Este modelo pone de manifiesto el problema fundamental de la inferencia causal.
+$$
+`\begin{align}
+  \tau_i = \color{#e64173}{y_{1,i}} &amp;- \color{#6A5ACD}{y_{0,i}}
+\end{align}`
+$$
+
+--
+
+.hi-slate[El desafío:]
+
+Si observamos `\(\color{#e64173}{y_{1,i}}\)` entonces no podemos observar `\(\color{#6A5ACD}{y_{0,i}}\)`.
+&lt;br&gt;Si observamos `\(\color{#6A5ACD}{y_{0,i}}\)`, entonces no podemos observar `\(\color{#e64173}{y_{1,i}}\)`.
+---
+
+Por lo tanto, un conjunto de datos que realmente observamos para 6 personas será algo así como
+.pull-left[
+
+```
+&gt;     i trt  y1i  y0i
+&gt; 1   1   1 5.01   NA
+&gt; 2   2   1 8.85   NA
+&gt; 3   3   1 6.31   NA
+&gt; 4   4   1 5.97   NA
+&gt; 5   5   1 7.61   NA
+&gt; 6   6   0   NA 4.15
+&gt; 7   7   0   NA 0.56
+&gt; 8   8   0   NA 3.52
+&gt; 9   9   0   NA 4.49
+&gt; 10 10   0   NA 1.40
+```
+]
+
+--
+
+.pull-right[
+No podemos observar `\(\color{#e64173}{y_{1,i}}\)` y `\(\color{#6A5ACD}{y_{0,i}}\)`.
+
+Pero, si observamos
+- `\(\color{#e64173}{y_{1,i}}\)` para `\(i\)` en 1, 2, 3, 4, 5
+- `\(\color{#6A5ACD}{y_{0,j}}\)` para `\(j\)` en 6, 7, 8, 9, 10
+
+]
+
+--
+
+**P:** ¿Cómo "rellenamos" los `NA`s y estimamos `\(\overline{\tau}\)`?
+---
+layout: true
+# Causalidad
+## Estimación causal del efecto del tratamiento
+---
+name: estimation
+
+.hi-slate[Notación:] Sea `\(D_i\)` una variable indicadora binaria tal que
+
+- `\(\color{#e64173}{D_i=1}\)` .pink[si el individuo] `\(\color{#e64173}{i}\)` .pink[es tratado]
+- `\(\color{#6A5ACD}{D_i=0}\)` .purple[si el individuo] `\(\color{#6A5ACD}{i}\)` .purple[no es tratado (grupo de *control*)].
+
+--
+
+Entonces, reformulando la diapositiva anterior,
+
+- Sólo observamos `\(\color{#e64173}{y_{1,i}}\)` cuando `\(\color{#e64173}{D_{i}=1}\)`.
+- Sólo observamos `\(\color{#6A5ACD}{y_{0,i}}\)` cuando `\(\color{#6A5ACD}{D_{i}=0}\)`.
+
+--
+
+**P:** ¿Cómo podemos estimar `\(\overline{\tau}\)` usando solamente `\(\left(\color{#e64173}{y_{1,i}|D_i=1}\right)\)` y `\(\left(\color{#6A5ACD}{y_{0,i}|D_i=0}\right)\)`?
+
+---
+
+**P:** ¿Cómo podemos estimar `\(\overline{\tau}\)` usando solamente `\(\left(\color{#e64173}{y_{1,i}|D_i=1}\right)\)` y `\(\left(\color{#6A5ACD}{y_{0,i}|D_i=0}\right)\)`?
+
+--
+
+**Idea:** What if we compare the groups' means? ,_es decir_,
+$$
+`\begin{align}
+  \color{#e64173}{\mathop{Promedio}\left( y_i\mid D_i = 1 \right)} - \color{#6A5ACD}{\mathop{Promedio}\left( y_i\mid D_i =0 \right)}
+\end{align}`
+$$
+
+--
+
+**P:** ¿Cuándo esta simple diferencia en las medias de los grupos proporciona información sobre el .hi-slate[efecto causal] del tratamiento?
+
+--
+
+**P.sub[2.0]:** ¿Es `\(\color{#e64173}{\mathop{Promedio}\left( y_i\mid D_i = 1 \right)} - \color{#6A5ACD}{\mathop{Promedio}\left( y_i\mid D_i =0 \right)}\)` un *buen* estimador para `\(\overline{\tau}\)`?
+
+--
+
+¡Hora de las matemáticas! .bigger[🎉]
+---
+
+.hi-slate[Supuesto:] Sea `\(\tau_i = \tau\)` para todos los `\(i\)`.
+
+Esta suposición dice que el efecto del tratamiento es igual (constante) en todos los individuos `\(i\)`.
+
+--
+
+.hi-slate[Nota:] Definimos
+
+$$
+`\begin{align}
+  \tau_i = \tau = \color{#e64173}{y_{1,i}} - \color{#6A5ACD}{y_{0,i}}
+\end{align}`
+$$
+
+lo cual implica que
+
+$$
+`\begin{align}
+   \color{#e64173}{y_{1,i}} = \color{#6A5ACD}{y_{0,i}} + \tau
+\end{align}`
+$$
+
+---
+layout: false
+class: clear
+name: derivation
+
+**P.sub[3.0]:** ¿Es `\(\color{#e64173}{\mathop{Promedio}\left( y_i\mid D_i = 1 \right)} - \color{#6A5ACD}{\mathop{Promedio}\left( y_i\mid D_i =0 \right)}\)` un *buen* estimador para `\(\tau\)`?
+
+--
+
+Diferencia de las medias de los grupos
+--
+&lt;br&gt; `\(\quad \color{#ffffff}{\Bigg|}=\color{#e64173}{\mathop{Promedio}\left( y_i\mid D_i = 1 \right)} - \color{#6A5ACD}{\mathop{Promedio}\left( y_i\mid D_i =0 \right)}\)`
+--
+&lt;br&gt; `\(\quad \color{#ffffff}{\Bigg|}=\color{#e64173}{\mathop{Promedio}\left( y_{1,i}\mid D_i = 1 \right)} - \color{#6A5ACD}{\mathop{Promedio}\left( y_{0,i}\mid D_i =0 \right)}\)`
+--
+&lt;br&gt; `\(\quad \color{#ffffff}{\Bigg|}=\color{#e64173}{\mathop{Promedio}\left( \color{#000000}{\tau \: +} \: \color{#6A5ACD}{y_{0,i}} \mid D_i = 1 \right)} - \color{#6A5ACD}{\mathop{Promedio}\left( y_{0,i}\mid D_i =0 \right)}\)`
+--
+&lt;br&gt; `\(\quad \color{#ffffff}{\Bigg|}=\tau + \color{#e64173}{\mathop{Promedio}\left(\color{#6A5ACD}{y_{0,i}} \mid D_i = 1 \right)} - \color{#6A5ACD}{\mathop{Promedio}\left( y_{0,i}\mid D_i =0 \right)}\)`
+--
+&lt;br&gt; `\(\quad \color{#ffffff}{\Bigg|}= \text{Average causal effect} + \color{#FFA500}{\text{Selection bias}}\)`
+
+--
+
+Así que nuestro estimador de diferencia de grupo propuesto nos da la suma de
+
+1. `\(\tau\)`, el .hi-slate[causal, efecto medio del tratamiento] que queremos
+2. .hi-orange[Sesgo de selección:] Cuánto difieren los grupos de trt. y de control (en promedio).
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

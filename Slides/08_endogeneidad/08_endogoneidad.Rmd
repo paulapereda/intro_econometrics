@@ -1,0 +1,912 @@
+---
+title: "Endogeneidad"
+subtitle: "Econometría I"
+author: "Paula Pereda (ppereda@correo.um.edu.uy)"
+date: "29 de octubre de 2021"
+output:
+  xaringan::moon_reader:
+    css: ['default', 'metropolis', 'metropolis-fonts', 'my-css.css']
+    lib_dir: libs
+    # self_contained: true
+    nature:
+      ratio: 16:9
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+class: inverse, middle
+
+```{R, setup, include = F}
+
+library(broom)
+library(here)
+library(tidyverse)
+library(latex2exp)
+library(ggplot2)
+library(ggthemes)
+library(viridis)
+library(extrafont)
+library(gridExtra)
+library(kableExtra)
+library(data.table)
+library(dplyr)
+library(lubridate)
+library(magrittr)
+library(knitr)
+library(parallel)
+library(emoGG)
+
+# Define pink color
+red_pink <- "#e64173"
+turquoise <- "#20B2AA"
+grey_light <- "grey70"
+grey_mid <- "grey50"
+grey_dark <- "grey20"
+purple <- "#6A5ACD"
+# Dark slate grey: #314f4f
+# Knitr options
+opts_chunk$set(
+  comment = ">",
+  fig.align = "center",
+  fig.height = 7,
+  fig.width = 10.5,
+  warning = F,
+  message = F
+)
+opts_chunk$set(dev = "svg")
+options(device = function(file, width, height) {
+  svg(tempfile(), width = width, height = height)
+})
+
+# A blank theme for ggplot
+# A blank theme for ggplot
+theme_empty <- theme_bw() + theme(
+  line = element_blank(),
+  rect = element_blank(),
+  strip.text = element_blank(),
+  axis.text = element_blank(),
+  plot.title = element_blank(),
+  axis.title = element_blank(),
+  plot.margin = structure(c(0, 0, -0.5, -1), unit = "lines", valid.unit = 3L, class = "unit"),
+  legend.position = "none"
+)
+theme_simple <- theme_bw() + theme(
+  line = element_blank(),
+  panel.grid = element_blank(),
+  rect = element_blank(),
+  strip.text = element_blank(),
+  axis.text.x = element_text(size = 18),
+  axis.text.y = element_blank(),
+  axis.ticks = element_blank(),
+  plot.title = element_blank(),
+  axis.title = element_blank(),
+  # plot.margin = structure(c(0, 0, -1, -1), unit = "lines", valid.unit = 3L, class = "unit"),
+  legend.position = "none"
+)
+theme_axes_math <- theme_void() + theme(
+  axis.title = element_text(size = 22),
+  axis.title.x = element_text(hjust = .95, margin = margin(0.15, 0, 0, 0, unit = "lines")),
+  axis.title.y = element_text(vjust = .95, margin = margin(0, 0.15, 0, 0, unit = "lines")),
+  axis.line = element_line(
+    color = "grey70",
+    size = 0.25,
+    arrow = arrow(angle = 30, length = unit(0.15, "inches")
+  )),
+  plot.margin = structure(c(1, 0, 1, 0), unit = "lines", valid.unit = 3L, class = "unit"),
+  legend.position = "none"
+)
+theme_axes_serif <- theme_void() + theme(
+  axis.title = element_text(size = 22),
+  axis.title.x = element_text(hjust = .95, margin = margin(0.15, 0, 0, 0, unit = "lines")),
+  axis.title.y = element_text(vjust = .95, margin = margin(0, 0.15, 0, 0, unit = "lines")),
+  axis.line = element_line(
+    color = "grey70",
+    size = 0.25,
+    arrow = arrow(angle = 30, length = unit(0.15, "inches")
+  )),
+  plot.margin = structure(c(1, 0, 1, 0), unit = "lines", valid.unit = 3L, class = "unit"),
+  legend.position = "none"
+)
+theme_axes <- theme_void() + theme(
+  axis.title = element_text(size = 18),
+  axis.title.x = element_text(hjust = .95, margin = margin(0.15, 0, 0, 0, unit = "lines")),
+  axis.title.y = element_text(vjust = .95, margin = margin(0, 0.15, 0, 0, unit = "lines")),
+  axis.line = element_line(
+    color = grey_light,
+    size = 0.25,
+    arrow = arrow(angle = 30, length = unit(0.15, "inches")
+  )),
+  plot.margin = structure(c(1, 0, 1, 0), unit = "lines", valid.unit = 3L, class = "unit"),
+  legend.position = "none"
+)
+theme_set(theme_gray(base_size = 20))
+```
+
+
+# Causalidad
+
+---
+
+## Intro
+
+La mayoría de las tareas de la econometría se reducen a uno de los dos objetivos:
+
+$$
+\begin{align}
+  y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_k x_k + u
+\end{align}
+$$
+
+--
+
+1. .hi-purple[Predicción:] Precisión y fiabilidad .purple[predicción/pronóstico] $\color{#6A5ACD}{y}$ utilizando un conjunto de variables explicativas-no es necesario que sean $x_1$ hasta $x_k$. Se centra en $\color{#6A5ACD}{hat{y}}$. $\beta_j$ no importa realmente.
+
+--
+
+1. .hi[Estimación causal:].super[.pink[†]] La estimación del proceso real de generación de datos-aprendizaje del modelo poblacional verdadero que explica .pink[cómo] $\color{#e64173}{y}$ .pink[cambia cuando cambiamos] $\color{#e64173}{x_j}$-se centra en $\color{#e64173}{beta_j}$. La precisión de $\hat{y}$ no es importante.
+
+.footnote[
+.pink[†] Usualmente llamado *identificación causal*.
+]
+
+---
+name: challenges
+
+## Los desafíos
+
+Como hemos visto hasta ahora, determinar y estimar el verdadero modelo puede ser bastante difícil, tanto en términos .purple[prácticos] como .pink[econométricos].
+
+--
+
+.pull-left[.purple[
+**Desafíos prácticos**
+
+- ¿Qué variables?
+- ¿Qué forma(s) funcional(es)?
+- ¿Existen datos? ¿Cuántos?
+- ¿Es representativa la muestra?
+]]
+
+--
+
+.pull-right[.pink[
+**Desafíos econométricos**
+
+- Sesgo de variable omitida
+- Causalidad inversa
+- Error de medición
+- ¿Qué precisión podemos/debemos tener?
+]]
+
+--
+
+Muchos de estos retos se relacionan con la .hi-slate[exogeneidad], _es decir_, $\color{#314f4f}{\mathop{\boldsymbol{E}}\left[ u_i | X \right] = 0}$.
+
+
+---
+
+## Es complicado
+
+Ocasionalmente, las relaciones .hi[*causales*] se pueden entender simplemente, _por ejemplo_,
+
+--
+
+- ¿Qué ha .pink[provocado] el incendio forestal?
+- .pink[¿Cómo] llegó este bebé aquí?
+
+--
+
+En general, las relaciones .hi[*causales*] son complejas y difíciles de responder, _por ejemplo_,
+
+--
+
+- ¿Qué causa el crecimiento de algunos países y el declive de otros?
+- ¿Qué .pink[causó] la elección del presidente Trump en 2016?
+- .pink[¿Cómo] afecta el número de policías a la delincuencia?
+- ¿Cuál es el efecto de una mejor calidad del aire en los resultados de los exámenes?
+- ¿Las penas de prisión más largas disminuyen la delincuencia?
+- ¿Cómo afectó la legalización del cannabis a la salud mental y a la adicción a los opioides?
+
+
+---
+
+## Correlación ≠ Causalidad
+
+Es probable que hayan escuchado el dicho
+
+> Correlación no es causalidad.
+
+El refrán sólo señala que hay violaciones de la exogeneidad.
+
+--
+
+Aunque la correlación no es causalidad, .hi [la causalidad *requiere* correlación].
+
+--
+
+.hi-slate[Nueva frase:]
+
+> Correlación más exogeneidad es causalidad.
+
+---
+layout: false
+class: clear, middle
+
+Veamos algunos ejemplos.
+---
+layout: true
+# Causalidad
+---
+name: fertilizer
+
+## Ejemplo: El efecto causal del abono.super[.pink[†]]
+
+.footnote[
+.pink[†] Muchos de los primeros estudios estadísticos y econométricos incluían ensayos de campo agrícolas.
+]
+
+Supongamos que queremos conocer el efecto causal del fertilizante sobre el rendimiento del maíz.
+
+--
+
+**P:** ¿Podríamos simplemente hacer una regresión del rendimiento en función del fertilizante?
+--
+<br>**R:** Probablemente no (si queremos el efecto causal).
+--
+<br><br>**P:** ¿Por qué no?
+--
+<br>**R:** Sesgo de variable omitida: Los agricultores pueden aplicar menos fertilizantes en zonas que ya son peores en otras dimensiones que afectan al rendimiento (suelo, pendiente, agua).<br>.pink[Viola *todo lo demás igual* (exogeneidad). Resultados sesgados y/o espurios].
+--
+<br><br>**P:** Entonces, ¿qué *deberíamos* hacer?
+--
+<br>**R:** .hi[¡Hacer un experimento!]
+--
+ 💩
+---
+
+## Ejemplo: El efecto causal del fertilizante
+
+Los experimentos aleatorios nos ayudan a mantener *todo lo demás igual* (exogeneidad).
+
+--
+
+A menudo llamamos a estos experimentos .hi[*randomized control trials*] (RCT)..super[.pink[†]]
+
+.footnote[
+.pink[†] La econometría (y la estadística) toma prestado este lenguaje de la bioestadística y los ensayos farmacéuticos.
+]
+
+--
+
+Imaginemos un RCT en el que tenemos dos grupos:
+
+- .hi-slate[Tratamiento:] Aplicamos fertilizante.
+- .hi-slate[Control:] No aplicamos fertilizante.
+
+--
+
+Al distribuir aleatoriamente las parcelas en .hi-slate[tratamiento] o .hi-slate[control], incluiremos, en promedio, todos los tipos de tierra (suelo, pendiente, agua, *etc.*) en ambos grupos.
+
+--
+
+*¡Todo lo demás es igual*!
+---
+class: clear
+
+.hi-slate[54 parcelas de igual tamaño]
+```{R, fertilizer_plot1, echo = F, fig.height = 5}
+xd <- 9
+yd <- 6
+set.seed(123)
+fert_df <- expand.grid(x = 1:xd, y = 1:yd) %>%
+  mutate(
+    q = x + y + 1.25 * rnorm(xd*yd),
+    trt = sample(x = c(T, F), size = xd*yd, replace = T, prob = c(0.51, 0.49)),
+  ) %>%
+  arrange(-y, x) %>%
+  mutate(id = 1:(xd*yd) %>% str_pad(2, "left", "0")) %>%
+  arrange(y, x)
+ggplot(data = fert_df, aes(x, y)) +
+geom_tile(color = "grey40", fill = "grey93", size = 0.2) +
+geom_text(aes(label = id), color = "grey45", size = 5, family = "Roboto Mono") +
+theme_void() +
+coord_equal()
+```
+---
+class: clear
+count: false
+
+.hi-slate[54 parcelas de igual tamaño] .hi[de distinta calidad]
+```{R, fertilizer_plot2, echo = F, fig.height = 5}
+ggplot(data = fert_df,
+  aes(x, y)
+) +
+geom_tile(aes(fill = q), color = "white", size = 0.2) +
+scale_fill_viridis(option = "magma", direction = -1) +
+theme_void() +
+theme(legend.position = "none") +
+coord_equal()
+```
+---
+class: clear
+count: false
+
+.hi-slate[54 parcelas de igual tamaño] .hi[de distinta calidad] .hi-orange[más el tratamiento asignado al azar]
+```{R, fertilizer_plot3_1, echo = F, fig.height = 5}
+set.seed(246)
+ggplot(data = fert_df,
+  aes(x, y)
+) +
+geom_tile(aes(fill = q), color = "white", size = 0.2) +
+# geom_text(aes(label = trt)) +
+geom_emoji(data = sample_n(fert_df, 1), emoji = "1f4a9") +
+scale_fill_viridis(option = "magma", direction = -1) +
+theme_void() +
+theme(legend.position = "none") +
+coord_equal()
+```
+---
+class: clear
+count: false
+
+.hi-slate[54 parcelas de igual tamaño] .hi[de distinta calidad] .hi-orange[más el tratamiento asignado al azar]
+```{R, fertilizer_plot3_2, echo = F, fig.height = 5}
+set.seed(246)
+ggplot(data = fert_df,
+  aes(x, y)
+) +
+geom_tile(aes(fill = q), color = "white", size = 0.2) +
+# geom_text(aes(label = trt)) +
+geom_emoji(data = sample_n(fert_df, 2), emoji = "1f4a9") +
+scale_fill_viridis(option = "magma", direction = -1) +
+theme_void() +
+theme(legend.position = "none") +
+coord_equal()
+```
+---
+class: clear
+count: false
+
+.hi-slate[54 parcelas de igual tamaño] .hi[de distinta calidad] .hi-orange[más el tratamiento asignado al azar]
+```{R, fertilizer_plot3_3, echo = F, fig.height = 5}
+set.seed(246)
+ggplot(data = fert_df,
+  aes(x, y)
+) +
+geom_tile(aes(fill = q), color = "white", size = 0.2) +
+# geom_text(aes(label = trt)) +
+geom_emoji(data = sample_n(fert_df, 3), emoji = "1f4a9") +
+scale_fill_viridis(option = "magma", direction = -1) +
+theme_void() +
+theme(legend.position = "none") +
+coord_equal()
+```
+---
+class: clear
+count: false
+
+.hi-slate[54 parcelas de igual tamaño] .hi[de distinta calidad] .hi-orange[más el tratamiento asignado al azar]
+```{R, fertilizer_plot3_4, echo = F, fig.height = 5}
+set.seed(246)
+ggplot(data = fert_df,
+  aes(x, y)
+) +
+geom_tile(aes(fill = q), color = "white", size = 0.2) +
+# geom_text(aes(label = trt)) +
+geom_emoji(data = sample_n(fert_df, 4), emoji = "1f4a9") +
+scale_fill_viridis(option = "magma", direction = -1) +
+theme_void() +
+theme(legend.position = "none") +
+coord_equal()
+```
+---
+class: clear
+count: false
+
+.hi-slate[54 parcelas de igual tamaño] .hi[de distinta calidad] .hi-orange[más el tratamiento asignado al azar]
+```{R, fertilizer_plot3_5, echo = F, fig.height = 5}
+set.seed(246)
+ggplot(data = fert_df,
+  aes(x, y)
+) +
+geom_tile(aes(fill = q), color = "white", size = 0.2) +
+# geom_text(aes(label = trt)) +
+geom_emoji(data = sample_n(fert_df, 5), emoji = "1f4a9") +
+scale_fill_viridis(option = "magma", direction = -1) +
+theme_void() +
+theme(legend.position = "none") +
+coord_equal()
+```
+---
+class: clear
+count: false
+
+.hi-slate[54 parcelas de igual tamaño] .hi[de distinta calidad] .hi-orange[más el tratamiento asignado al azar]
+```{R, fertilizer_plot3_6, echo = F, fig.height = 5}
+set.seed(246)
+ggplot(data = fert_df,
+  aes(x, y)
+) +
+geom_tile(aes(fill = q), color = "white", size = 0.2) +
+# geom_text(aes(label = trt)) +
+geom_emoji(data = sample_n(fert_df, 6), emoji = "1f4a9") +
+scale_fill_viridis(option = "magma", direction = -1) +
+theme_void() +
+theme(legend.position = "none") +
+coord_equal()
+```
+---
+class: clear
+count: false
+
+.hi-slate[54 parcelas de igual tamaño] .hi[de distinta calidad] .hi-orange[más el tratamiento asignado al azar]
+```{R, fertilizer_plot3_7, echo = F, fig.height = 5}
+set.seed(246)
+ggplot(data = fert_df,
+  aes(x, y)
+) +
+geom_tile(aes(fill = q), color = "white", size = 0.2) +
+# geom_text(aes(label = trt)) +
+geom_emoji(data = sample_n(fert_df, 7), emoji = "1f4a9") +
+scale_fill_viridis(option = "magma", direction = -1) +
+theme_void() +
+theme(legend.position = "none") +
+coord_equal()
+```
+---
+class: clear
+count: false
+
+.hi-slate[54 parcelas de igual tamaño] .hi[de distinta calidad] .hi-orange[más el tratamiento asignado al azar]
+```{R, fertilizer_plot3_8, echo = F, fig.height = 5}
+set.seed(246)
+ggplot(data = fert_df,
+  aes(x, y)
+) +
+geom_tile(aes(fill = q), color = "white", size = 0.2) +
+# geom_text(aes(label = trt)) +
+geom_emoji(data = sample_n(fert_df, 8), emoji = "1f4a9") +
+scale_fill_viridis(option = "magma", direction = -1) +
+theme_void() +
+theme(legend.position = "none") +
+coord_equal()
+```
+---
+class: clear
+count: false
+
+.hi-slate[54 parcelas de igual tamaño] .hi[de distinta calidad] .hi-orange[más el tratamiento asignado al azar]
+```{R, fertilizer_plot3_9, echo = F, fig.height = 5}
+set.seed(246)
+ggplot(data = fert_df,
+  aes(x, y)
+) +
+geom_tile(aes(fill = q), color = "white", size = 0.2) +
+# geom_text(aes(label = trt)) +
+geom_emoji(data = sample_n(fert_df, 9), emoji = "1f4a9") +
+scale_fill_viridis(option = "magma", direction = -1) +
+theme_void() +
+theme(legend.position = "none") +
+coord_equal()
+```
+---
+class: clear
+count: false
+
+.hi-slate[54 parcelas de igual tamaño] .hi[de distinta calidad] .hi-orange[más el tratamiento asignado al azar]
+```{R, fertilizer_plot3_10, echo = F, fig.height = 5}
+set.seed(246)
+ggplot(data = fert_df,
+  aes(x, y)
+) +
+geom_tile(aes(fill = q), color = "white", size = 0.2) +
+# geom_text(aes(label = trt)) +
+geom_emoji(data = sample_n(fert_df, round(xd * yd / 2, 0)), emoji = "1f4a9") +
+scale_fill_viridis(option = "magma", direction = -1) +
+theme_void() +
+theme(legend.position = "none") +
+coord_equal()
+```
+---
+class: clear
+count: false
+
+.hi-slate[54 parcelas de igual tamaño] .hi[de distinta calidad] .hi-orange[más el tratamiento asignado al azar]
+```{R, fertilizer_plot3_11, echo = F, fig.height = 5}
+set.seed(248)
+ggplot(data = fert_df,
+  aes(x, y)
+) +
+geom_tile(aes(fill = q), color = "white", size = 0.2) +
+# geom_text(aes(label = trt)) +
+geom_emoji(data = sample_n(fert_df, round(xd * yd / 2, 0)), emoji = "1f4a9") +
+scale_fill_viridis(option = "magma", direction = -1) +
+theme_void() +
+theme(legend.position = "none") +
+coord_equal()
+```
+---
+class: clear
+count: false
+
+.hi-slate[54 parcelas de igual tamaño] .hi[de distinta calidad] .hi-orange[más el tratamiento asignado al azar]
+```{R, fertilizer_plot3_12, echo = F, fig.height = 5}
+set.seed(250)
+ggplot(data = fert_df,
+  aes(x, y)
+) +
+geom_tile(aes(fill = q), color = "white", size = 0.2) +
+# geom_text(aes(label = trt)) +
+geom_emoji(data = sample_n(fert_df, round(xd * yd / 2, 0)), emoji = "1f4a9") +
+scale_fill_viridis(option = "magma", direction = -1) +
+theme_void() +
+theme(legend.position = "none") +
+coord_equal()
+```
+---
+
+## Ejemplo: El efecto causal del fertilizante
+
+Podemos estimar el .hi[efecto causal] del fertilizante sobre el rendimiento de los cultivos comparando el rendimiento medio del grupo de tratamiento (💩) con el grupo de control (sin 💩).
+
+$$
+\begin{align}
+  \overline{\text{Rendimiento}}_\text{Tratamiento} - \overline{\text{Rendimiento}}_\text{Control}
+\end{align}
+$$
+
+--
+
+Como alternativa, podemos utilizar la regresión
+
+--
+
+$$
+\begin{align}
+  \text{Rendimiento}_i = \beta_0 + \beta_1 \text{Trt}_i + u_i \tag{1}
+\end{align}
+$$
+
+donde $\text{Trt}_i$ es una variable binaria (=1 si la parcela $i$ recibió el tratamiento de fertilización).
+
+--
+
+**P:** ¿Debemos esperar que $(1)$ satisfaga la exogeneidad? ¿Por qué?
+--
+<br>**R:** Por término medio, .hi[la asignación aleatoria del tratamiento debe equilibrar] trt. y control en las demás dimensiones que afectan al rendimiento (suelo, pendiente, agua).
+---
+layout: true
+# Causalidad
+## Ejemplo: Retornos a la educación
+---
+name: returns
+
+Los economistas laborales, los responsables políticos, los padres y los estudiantes están interesados en el *retorno monetario de la educación*.
+
+--
+
+.hi-slate[Experimento mental:]
+- Selecciona al azar un individuo.
+- Dale un año más de educación.
+- ¿Cuánto aumentan sus ingresos?
+
+Este cambio en los ingresos nos da el .hi-slate[efecto causal] de la educación sobre los ingresos.
+---
+
+**P:** ¿Podríamos simplemente hacer una regresión de los ingresos en función de la educación?
+--
+<br>**R:** De nuevo, probablemente no si queremos el verdadero efecto causal.
+
+--
+1. La gente *elige* la educación en función de muchos factores, *por ejemplo*, la capacidad.
+1. La educación probablemente reduzca la experiencia (tiempo fuera de la fuerza de trabajo).
+1. La educación es .hi[*endógena*] (viola la *exogeneidad*).
+
+--
+
+El punto (2) anterior también ilustra la dificultad de aprender sobre la educación manteniendo todo lo demás constante.
+
+Muchas variables importantes tienen el mismo reto: género, raza, ingresos.
+---
+
+**P:** Entonces, ¿cómo podemos estimar los rendimientos de la educación?
+
+--
+
+.hi-slate[Opción 1:] Correr un .hi[experimento].
+
+--
+
+- Aleatoriamente .pink[asignar educación] (podría ser difícil).
+- Aleatoriamente .pink[fomentar la educación] (podría funcionar).
+- Aleatoriamente .pink[asignar programas] que afecten a la educación (*por ejemplo, tutorías).
+
+--
+
+.hi-slate[Opción 2:] Busque un .hi-purple[*experimento natural*]-una política o accidente en la sociedad que haya aumentado arbitrariamente la educación de un subconjunto de personas.
+
+--
+
+- Admisiones .purple[límites]
+- .purple[lotería] inscripción y/o capacidad .purple[limitaciones]
+---
+layout: true
+# Causalidad
+---
+name: real
+
+## Experimentos reales
+
+En ambos ejemplos se consideran .hi-slate[experimentos reales] que aíslan los efectos causales.
+
+.hi-slate[Características]
+
+- .purple[Realizable]-podemos realmente (potencialmente) realizar el experimento.
+- .morado[Comparar individuos] aleatorizados en el tratamiento con individuos aleatorizados en el control.
+- .purple[Requiere una "buena" aleatorización] para obtener *todo lo demás igual* (exogeneidad).
+
+--
+
+*Nota:* Los resultados de su experimento son sólo tan buenos como su aleatorización.
+---
+class: clear
+count: false
+
+.hi-slate[Una aleatorización desafortunada]
+```{R, fertilizer_plot3_bad, echo = F, fig.height = 5}
+ggplot(data = fert_df,
+  aes(x, y)
+) +
+geom_tile(aes(fill = q), color = "white", size = 0.2) +
+# geom_text(aes(label = trt)) +
+geom_emoji(data = filter(fert_df, x < xd/3 | y <= yd/3 | (x == xd & y == yd)), emoji = "1f4a9") +
+scale_fill_viridis(option = "magma", direction = -1) +
+theme_void() +
+theme(legend.position = "none") +
+coord_equal()
+```
+---
+layout: true
+# Causalidad
+## El experimento ideal
+---
+name: ideal
+
+El .hi[experimento ideal] sería sutilmente diferente.
+
+En lugar de comparar unidades aleatorizadas como .pink[tratamiento] frente a .pink[control], el experimento ideal compararía el tratamiento y el control .hi[para la misma y exacta unidad].
+
+--
+
+$$
+\begin{align}
+  y_{\text{Tratamiento},i} - y_{\text{Control},i}
+\end{align}
+$$
+
+--
+
+que escribiremos (para simplificar) como
+
+$$
+\begin{align}
+  y_{1,i} - y_{0,i}
+\end{align}
+$$
+
+--
+
+Este .pink[*experimento ideal*] es claramente inviable.super[.pink[†]], pero crea una bonita notación para la causalidad (el modelo causal de Rubin/marco de resultados potenciales de Neyman).
+
+.footnote[
+.pink[†] Sin (1) habilidades similares a las de Dios y múltiples universos o (2) una máquina del tiempo.
+]
+---
+
+.pull-left[
+The *ideal* data for 10 people
+```{R, ideal_data, echo = F}
+set.seed(3)
+ideal_df <- data.frame(
+  i = 1:10,
+  trt = rep(c(1, 0), each = 5),
+  y1i = c(runif(10, 4, 10) %>% round(2)),
+  y0i = c(runif(10, 0, 5) %>% round(2))
+)
+ideal_df
+```
+]
+
+--
+
+.pull-right[
+Calcula el efecto causal del trt.
+$$
+\begin{align}
+  \tau_i = y_{1,i} -  y_{0,i}
+\end{align}
+$$
+para cada individuo $i$.
+]
+---
+count: false
+
+.pull-left[
+Los datos *ideales* para 10 personas
+```{R, ideal_data_trt, echo = F}
+ideal_df %>% mutate(effect_i = y1i - y0i)
+```
+]
+
+.pull-right[
+Calcula el efecto causal del trt.
+$$
+\begin{align}
+  \tau_i = y_{1,i} -  y_{0,i}
+\end{align}
+$$
+para cada individuo $i$.
+]
+---
+count: false
+
+.pull-left[
+Los datos *ideales* para 10 personas
+```{R, ideal_data_trt2, echo = F}
+ideal_df %>% mutate(effect_i = y1i - y0i)
+```
+]
+
+.pull-right[
+Calcula el efecto causal del trt.
+$$
+\begin{align}
+  \tau_i = y_{1,i} -  y_{0,i}
+\end{align}
+$$
+para cada individuo $i$.
+
+La media $\tau_i$ es el<br>.hi[average treatment effect] (.pink[ATE]).
+
+Entonces, $\color{#e64173}{\overline{\tau} = `r transmute(ideal_df, effect_i = y1i - y0i) %>% unlist %>% mean %>% round(2)`}$
+]
+
+---
+
+Este modelo pone de manifiesto el problema fundamental de la inferencia causal.
+$$
+\begin{align}
+  \tau_i = \color{#e64173}{y_{1,i}} &- \color{#6A5ACD}{y_{0,i}}
+\end{align}
+$$
+
+--
+
+.hi-slate[El desafío:]
+
+Si observamos $\color{#e64173}{y_{1,i}}$ entonces no podemos observar $\color{#6A5ACD}{y_{0,i}}$.
+<br>Si observamos $\color{#6A5ACD}{y_{0,i}}$, entonces no podemos observar $\color{#e64173}{y_{1,i}}$.
+---
+
+Por lo tanto, un conjunto de datos que realmente observamos para 6 personas será algo así como
+.pull-left[
+```{R, ideal_data_obs, echo = F}
+obs_df <- ideal_df
+obs_df$y0i[1:5] <- NA
+obs_df$y1i[6:10] <- NA
+obs_df
+```
+]
+
+--
+
+.pull-right[
+No podemos observar $\color{#e64173}{y_{1,i}}$ y $\color{#6A5ACD}{y_{0,i}}$.
+
+Pero, si observamos
+- $\color{#e64173}{y_{1,i}}$ para $i$ en 1, 2, 3, 4, 5
+- $\color{#6A5ACD}{y_{0,j}}$ para $j$ en 6, 7, 8, 9, 10
+
+]
+
+--
+
+**P:** ¿Cómo "rellenamos" los `NA`s y estimamos $\overline{\tau}$?
+---
+layout: true
+# Causalidad
+## Estimación causal del efecto del tratamiento
+---
+name: estimation
+
+.hi-slate[Notación:] Sea $D_i$ una variable indicadora binaria tal que
+
+- $\color{#e64173}{D_i=1}$ .pink[si el individuo] $\color{#e64173}{i}$ .pink[es tratado]
+- $\color{#6A5ACD}{D_i=0}$ .purple[si el individuo] $\color{#6A5ACD}{i}$ .purple[no es tratado (grupo de *control*)].
+
+--
+
+Entonces, reformulando la diapositiva anterior,
+
+- Sólo observamos $\color{#e64173}{y_{1,i}}$ cuando $\color{#e64173}{D_{i}=1}$.
+- Sólo observamos $\color{#6A5ACD}{y_{0,i}}$ cuando $\color{#6A5ACD}{D_{i}=0}$.
+
+--
+
+**P:** ¿Cómo podemos estimar $\overline{\tau}$ usando solamente $\left(\color{#e64173}{y_{1,i}|D_i=1}\right)$ y $\left(\color{#6A5ACD}{y_{0,i}|D_i=0}\right)$?
+
+---
+
+**P:** ¿Cómo podemos estimar $\overline{\tau}$ usando solamente $\left(\color{#e64173}{y_{1,i}|D_i=1}\right)$ y $\left(\color{#6A5ACD}{y_{0,i}|D_i=0}\right)$?
+
+--
+
+**Idea:** What if we compare the groups' means? ,_es decir_,
+$$
+\begin{align}
+  \color{#e64173}{\mathop{Promedio}\left( y_i\mid D_i = 1 \right)} - \color{#6A5ACD}{\mathop{Promedio}\left( y_i\mid D_i =0 \right)}
+\end{align}
+$$
+
+--
+
+**P:** ¿Cuándo esta simple diferencia en las medias de los grupos proporciona información sobre el .hi-slate[efecto causal] del tratamiento?
+
+--
+
+**P.sub[2.0]:** ¿Es $\color{#e64173}{\mathop{Promedio}\left( y_i\mid D_i = 1 \right)} - \color{#6A5ACD}{\mathop{Promedio}\left( y_i\mid D_i =0 \right)}$ un *buen* estimador para $\overline{\tau}$?
+
+--
+
+¡Hora de las matemáticas! .bigger[🎉]
+---
+
+.hi-slate[Supuesto:] Sea $\tau_i = \tau$ para todos los $i$.
+
+Esta suposición dice que el efecto del tratamiento es igual (constante) en todos los individuos $i$.
+
+--
+
+.hi-slate[Nota:] Definimos
+
+$$
+\begin{align}
+  \tau_i = \tau = \color{#e64173}{y_{1,i}} - \color{#6A5ACD}{y_{0,i}}
+\end{align}
+$$
+
+lo cual implica que
+
+$$
+\begin{align}
+   \color{#e64173}{y_{1,i}} = \color{#6A5ACD}{y_{0,i}} + \tau
+\end{align}
+$$
+
+---
+layout: false
+class: clear
+name: derivation
+
+**P.sub[3.0]:** ¿Es $\color{#e64173}{\mathop{Promedio}\left( y_i\mid D_i = 1 \right)} - \color{#6A5ACD}{\mathop{Promedio}\left( y_i\mid D_i =0 \right)}$ un *buen* estimador para $\tau$?
+
+--
+
+Diferencia de las medias de los grupos
+--
+<br> $\quad \color{#ffffff}{\Bigg|}=\color{#e64173}{\mathop{Promedio}\left( y_i\mid D_i = 1 \right)} - \color{#6A5ACD}{\mathop{Promedio}\left( y_i\mid D_i =0 \right)}$
+--
+<br> $\quad \color{#ffffff}{\Bigg|}=\color{#e64173}{\mathop{Promedio}\left( y_{1,i}\mid D_i = 1 \right)} - \color{#6A5ACD}{\mathop{Promedio}\left( y_{0,i}\mid D_i =0 \right)}$
+--
+<br> $\quad \color{#ffffff}{\Bigg|}=\color{#e64173}{\mathop{Promedio}\left( \color{#000000}{\tau \: +} \: \color{#6A5ACD}{y_{0,i}} \mid D_i = 1 \right)} - \color{#6A5ACD}{\mathop{Promedio}\left( y_{0,i}\mid D_i =0 \right)}$
+--
+<br> $\quad \color{#ffffff}{\Bigg|}=\tau + \color{#e64173}{\mathop{Promedio}\left(\color{#6A5ACD}{y_{0,i}} \mid D_i = 1 \right)} - \color{#6A5ACD}{\mathop{Promedio}\left( y_{0,i}\mid D_i =0 \right)}$
+--
+<br> $\quad \color{#ffffff}{\Bigg|}= \text{Average causal effect} + \color{#FFA500}{\text{Sesgo de selección}}$
+
+--
+
+Así que nuestro estimador de diferencia de grupo propuesto nos da la suma de
+
+1. $\tau$, el .hi-slate[causal, efecto medio del tratamiento] que queremos
+2. .hi-orange[Sesgo de selección:] Cuánto difieren los grupos de trt. y de control (en promedio).

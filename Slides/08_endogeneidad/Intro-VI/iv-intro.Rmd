@@ -1,0 +1,522 @@
+---
+title: "Intro - Variables Instrumentales"
+subtitle: "Econometría I"
+author: "Paula Pereda (ppereda@correo.um.edu.uy)"
+date: "29 de octubre de 2021"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(fig.width = 6, fig.asp = 0.618, fig.align = "center",
+                      fig.retina = 3, out.width = "75%", collapse = TRUE,
+                      message = F)
+set.seed(1989)
+options("digits" = 2, "width" = 150)
+options(dplyr.summarise.inform = FALSE)
+ggplot2::theme_set(ggplot2::theme_minimal())
+```
+
+## Antecedentes
+
+Para todos estos ejemplos, nos interesa la eterna cuestión econométrica de si un año más de educación provoca un aumento de los salarios. A los economistas les encanta este tema.
+
+Exploraremos la cuestión con tres conjuntos de datos diferentes: uno falso que he inventado y dos reales procedentes de investigaciones publicadas.
+
+- [<i class="fas fa-table"></i> `father_education.csv`](/data/father_education.csv)
+- [<i class="fas fa-table"></i> `wage2.csv`](/data/wage2.csv)
+- [<i class="fas fa-table"></i> `card.csv`](/data/card.csv)
+
+Asegurensé de cargar todas estas bibliotecas antes de empezar:
+
+```{r load-libraries, message=FALSE, warning=FALSE}
+library(tidyverse)  # ggplot(), %>%, mutate(), and friends
+library(broom)  # Convert models to data frames
+library(modelsummary)  # Create side-by-side regression tables
+library(kableExtra)  # Add fancier formatting to tables
+library(estimatr)  # Run 2SLS models in one step with iv_robust()
+```
+
+## Educación, salarios y educación del padre (datos falsos)
+
+Primero vamos a utilizar algunos datos falsos para ver si la educación causa salarios adicionales.
+
+```{r load-fake-data-fake}
+ed_fake <- read_csv("data/father_education.csv")
+```
+
+El archivo `father_education.csv` contiene cuatro variables:
+
+| Variable name | Description                                                                           |
+| ------------- | ------------------------------------------------------------------------------------- |
+| `wage`        | Weekly wage                                                                           |
+| `educ`        | Years of education                                                                    |
+| `ability`     | Magical column that measures your ability to work and go to school (omitted variable) |
+| `fathereduc`  | Years of education for father                                                         |
+
+### Modelo ingenuo
+
+Si pudiéramos medir realmente la capacidad, podríamos estimar este modelo, que cierra la puerta trasera de confusión que supone la capacidad y aísla sólo el efecto de la educación en los salarios:
+
+```{r}
+model_forbidden <- lm(wage ~ educ + ability, data = ed_fake)
+tidy(model_forbidden)
+```
+
+Sin embargo, en la vida real no tenemos `ability` ("capacidad"), así que nos quedamos con un modelo ingenuo:
+
+```{r}
+model_naive <- lm(wage ~ educ, data = ed_fake)
+tidy(model_naive)
+```
+
+El modelo ingenuo sobreestima el efecto de la educación en los salarios (12,2 frente a 9,24) debido al sesgo de las variables omitidas. La educación sufre de endogeneidad: hay cosas en el modelo (como la capacidad, oculta en el término de error) que están correlacionadas con ella. Cualquier estimación que calculemos será errónea y sesgada debido a los efectos de selección o al sesgo de las variables omitidas (todos ellos nombres diferentes para la endogeneidad).
+
+### Comprobar la validez del instrumento
+
+Para solucionar el problema de la endogeneidad, podemos utilizar un instrumento para eliminar la endogeneidad de la educación y, en su lugar, utilizar una versión especial de la educación que sólo sea exógena. Tal vez la educación del padre de alguien puede ser un instrumento para la educación (no es el mejor instrumento, pero vamos a ir con él).
+
+Para que un instrumento sea válido, debe cumplir tres criterios:
+
+1. **Relevancia**: El instrumento está correlacionado con la variable política
+2. **Exclusión**: El instrumento está correlacionado con el resultado *sólo a través* de la variable política
+3. **Exogeneidad**: El instrumento no está correlacionado con nada más en el modelo (es decir, variables omitidas)
+
+**Relevancia**
+
+En primer lugar, podemos comprobar la relevancia realizando un gráfico de dispersión y ejecutando un modelo de `policy ~ instrument`:
+
+```{r message=FALSE}
+ggplot(ed_fake, aes(x = fathereduc, y = educ)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+check_relevance <- lm(educ ~ fathereduc, data = ed_fake)
+tidy(check_relevance)
+glance(check_relevance)
+```
+
+Esto tiene muy buena pinta. El estadístico F es definitivamente superior a 10 (¡es 7,136!), y hay una relación significativa entre el instrumento y la política. Yo diría que esto es relevante.
+
+**Exclusión**
+
+Para comprobar la exclusión, tenemos que ver si hay una relación entre la educación del padre y los salarios que se produce *sólo* por la educación. Si lo graficamos, veremos una relación:
+
+```{r message=FALSE}
+ggplot(ed_fake, aes(x = fathereduc, y = wage)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+```
+
+Eso es de esperar, ya que en nuestro modelo, la educación del padre causa la educación que causa los salarios - deberían estar correlacionados. Pero tenemos que usar una historia convincente + teoría para justificar la idea de que la educación del padre aumenta el salario por hora *sólo porque aumenta la educación*, y no hay ninguna prueba estadística real para eso. Buena suerte.
+
+**Exogeneidad**
+
+Tampoco hay realmente una prueba de exogeneidad, ya que no hay manera de medir otras variables endógenas en el modelo (¡esa es la razón por la que usamos IVs en primer lugar!). Como tenemos la columna mágica "capacidad" en estos datos falsos, podemos probarla. La educación del padre no debería estar relacionada con la capacidad:
+
+```{r message=FALSE}
+ggplot(ed_fake, aes(x = ability, y = fathereduc)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+```
+
+Y no lo es. Podemos decir con seguridad que cumple el supuesto de exogeneidad.
+
+En la vida real, sin embargo, no hay ninguna prueba estadística de exogeneidad. Sólo tenemos que contar una historia basada en la teoría de que el número de años de educación que tiene el padre no está correlacionado con nada más en el modelo (incluyendo cualquier variable omitida). Buena suerte con eso... probablemente no sea un buen instrumento. Esto se relaciona con el argumento de Scott Cunningham de que los instrumentos tienen que ser raros. [Según Scott](https://twitter.com/causalinf/status/1194069373935337473):
+
+> La razón por la que pienso esto es porque un instrumento no pertenece al término de error estructural y el término de error estructural son todas las cosas intuitivas que determinan su resultado. Así que *debe* ser raro, de lo contrario probablemente esté en el término de error.
+
+Imaginemos que la educación del padre *es* un instrumento válido y sigamos adelante :)
+
+### 2SLS manual
+
+Ahora podemos hacer una regresión de mínimos cuadrados en dos etapas (2SLS) y utilizar el instrumento para filtrar la parte endógena de la educación. La primera etapa predice la educación basándose en el instrumento (ya ejecutamos este modelo anteriormente al comprobar la relevancia, pero lo haremos de nuevo sólo por diversión):
+
+```{r}
+first_stage <- lm(educ ~ fathereduc, data = ed_fake)
+```
+
+Ahora queremos añadir una columna de educación predicha a nuestro conjunto de datos original. La forma más sencilla de hacerlo es con la función `augment_columns()` de la librería **broom**, que introduce los valores de un conjunto de datos en un modelo para generar predicciones:
+
+```{r}
+ed_fake_with_prediction <- augment_columns(first_stage, ed_fake)
+head(ed_fake_with_prediction)
+```
+
+Nótese un par de estas nuevas columnas. `.fitted` es el valor ajustado/previsto de la educación, y es la versión de la educación con la endogeneidad posiblemente eliminada. La columna `.resid` muestra lo lejos que está la predicción de `educ`. Las otras columnas no importan tanto.
+
+En lugar de tratar con nombres extraños como `.fitted`, me gusta cambiar el nombre de la variable ajustada a algo más comprensible después de usar `augment_columns`:
+
+```{r}
+ed_fake_with_prediction <- augment_columns(first_stage, ed_fake) %>%
+  rename(educ_hat = .fitted)
+
+head(ed_fake_with_prediction)
+```
+
+`educ_hat`
+```{r}
+second_stage <- lm(wage ~ educ_hat, data = ed_fake_with_prediction)
+tidy(second_stage)
+```
+
+La estimación de `educ_hat` es posiblemente más precisa ahora porque hemos utilizado el instrumento para eliminar la parte endógena de la educación y sólo deberíamos tener la parte exógena.
+
+### 2SLS en un paso
+
+Hacer todo ese trabajo en dos etapas es bonito y ayuda a la intuición de las variables instrumentales, pero es tedioso. Y lo que es más importante, los errores estándar de `educ_hat` son erróneos y el $R^2$ y otros diagnósticos para el modelo de la segunda etapa también son erróneos. Usted puede utilizar las matemáticas de lujo para ajustar estas cosas en la segunda etapa, pero no vamos a hacer eso. En su lugar, utilizaremos una función que realiza ambas etapas del modelo 2SLS al mismo tiempo.
+
+Hay varias funciones de diferentes paquetes de R que le permiten hacer 2SLS, y todos ellos trabajan un poco diferente y tienen diferentes beneficios:
+
+- [`iv_robust()` from **estimatr**](https://declaredesign.org/r/estimatr/articles/getting-started.html#iv_robust):
+    - Syntax: `outcome ~ treatment | instrument`
+    - Benefits: Handles robust and clustered standard errors
+- [`ivreg()` from **ivreg**](https://github.com/john-d-fox/ivreg/):
+    - Syntax: `outcome ~ treatment | instrument`
+    - Benefits: Includes a ton of fancy diagnostics
+- [`ivreg()` from **AER**](https://raw.githack.com/uo-ec607/lectures/master/08-regression/08-regression.html#Option_1:_AER::ivreg()):
+    - Syntax: `outcome ~ treatment | instrument`
+    - Benefits: Includes special tests for weak instruments (that are better than the standard "check if F > 10"), like Anderson-Rubin confidence intervals
+- [`lfe()` from **felm**](https://raw.githack.com/uo-ec607/lectures/master/08-regression/08-regression.html#Option_3:_felm::lfe()):
+    - Syntax: `outcome ~ treatment | fixed effects | instrument`
+    - Benefits: Handles fixed effects really quickly (kind of like `feols()` that you used in Problem Set 5)
+- [`plm()` from **plm**](https://cran.r-project.org/web/packages/plm/vignettes/plmPackage.html#instrumental-variable-estimators):
+    - Syntax: `outcome ~ treatment | instrument`
+    - Benefits: Handles panel data (country/year, state/year, etc.)
+
+Normalmente me gusta usar `iv_robust()`, así que lo haremos aquí. En lugar de ejecutar una primera etapa, generar predicciones, y ejecutar una segunda etapa, podemos hacerlo todo de una vez así:
+
+```{r}
+model_2sls <- iv_robust(wage ~ educ | fathereduc,
+                        data = ed_fake)
+tidy(model_2sls)
+```
+
+El coeficiente para `educ` aquí es el mismo que `educ_hat` del modelo 2SLS manual, ¡pero aquí lo encontramos en una línea de código! Además, los errores estándar del modelo y los diagnósticos son ahora correctos.
+
+### Comparar resultados
+
+Podemos poner todos los modelos uno al lado del otro para compararlos:
+
+```{r warning=FALSE}
+# gof_omit here will omit goodness-of-fit rows that match any of the text. This
+# means 'contains "IC" OR contains "Low" OR contains "Adj" OR contains "p.value"
+# OR contains "statistic" OR contains "se_type"'. Basically we're getting rid of
+# all the extra diagnostic information at the bottom
+modelsummary(list("Prohibido" = model_forbidden, "OLS" = model_naive,
+                  "2SLS (manual)" = second_stage, "2SLS (automático)" = model_2sls),
+             gof_omit = "IC|Log|Adj|p\\.value|statistic|se_type",
+             stars = TRUE) %>%
+  # Add a background color to rows 3 and 7
+  row_spec(c(3, 7), background = "#F5ABEA")
+```
+
+Obsérvese cómo los coeficientes de `educ_hat` y `educ` en los modelos 2SLS se aproximan al coeficiente de `educ` en el modelo prohibido que tiene en cuenta la capacidad. ¡Esa es la magia de las variables instrumentales!
+
+
+## Educación, salarios y educación de los padres (instrumentos múltiples) (datos reales)
+
+Estos datos provienen del conjunto de datos `wage2` del paquete R **wooldridge** (¡y son reales!). Los datos fueron utilizados en este trabajo:
+
+> M. Blackburn and D. Neumark (1992), "Unobserved Ability, Efficiency Wages, and Interindustry Wage Differentials," *Quarterly Journal of Economics* 107, 1421-1436. <https://doi.org/10.3386/w3857>
+
+```{r}
+wage2 <- read_csv("data/wage2.csv")
+```
+
+
+Este conjunto de datos incluye un montón de variables diferentes. Si ejecuta `library(wooldridge)` y luego corren `?wage` puede ver la documentación de los datos. Estas son las variables que nos interesan para este ejemplo:
+
+| Variable name | Description                     |
+| ------------- | ------------------------------- |
+| `wage`        | Monthly wage (1980 dollars)     |
+| `educ`        | Years of education              |
+| `feduc`       | Years of education for father   |
+| `meduc`       | Years of education for mother   |
+
+Para facilitar la vida, cambiaremos el nombre de algunas columnas y eliminaremos las filas con datos que faltan:
+
+```{r}
+ed_real <- wage2 %>%
+  rename(education = educ, education_dad = feduc, education_mom = meduc) %>%
+  na.omit()  # Get rid of rows with missing values
+```
+
+### Modelo ingenuo
+
+Queremos estimar de nuevo el efecto de la educación sobre los salarios, pero esta vez utilizaremos como instrumentos tanto la educación del padre como la de la madre. Aquí está la estimación ingenua de la relación, que sufre de endogeneidad:
+
+```{r}
+model_naive <- lm(wage ~ education, data = ed_real)
+tidy(model_naive)
+```
+
+Sin embargo, ¡esto es un error! La educación es endógena a cosas no medidas en el modelo (como la capacidad, que vive en el término de error). Podemos aislar la parte exógena de la educación con un instrumento.
+
+### Comprobar la validez del instrumento
+
+Antes de realizar cualquier modelo 2SLS, queremos comprobar la validez de los instrumentos. Recuerde que para que un instrumento sea válido, debe cumplir estos criterios
+
+1. **Relevancia**: El instrumento está correlacionado con la variable política
+2. **Exclusión**: El instrumento está correlacionado con el resultado *sólo a través* de la variable política
+3. **Exogeneidad**: El instrumento no está correlacionado con nada más en el modelo (es decir, variables omitidas)
+
+**Relevancia**
+
+Podemos comprobar la relevancia observando la relación entre los instrumentos y la educación:
+
+```{r message=FALSE}
+# Combine father's and mother's education into one column so we can plot both at the same time
+ed_real_long <- ed_real %>%
+  pivot_longer(cols = c(education_dad, education_mom),
+               names_to = "instrument", values_to = "instrument_value")
+
+ggplot(ed_real_long, aes(x = instrument_value, y = education)) +
+  # Make points semi-transparent because of overplotting
+  geom_point(alpha = 0.2) +
+  geom_smooth(method = "lm") +
+  facet_wrap(vars(instrument))
+```
+
+```{r}
+model_check_instruments <- lm(education ~ education_dad + education_mom,
+                              data = ed_real)
+tidy(model_check_instruments)
+glance(model_check_instruments)
+```
+
+Hay una clara relación entre ambos instrumentos y la educación, y los coeficientes de cada uno son significativos. El estadístico F del modelo es de 83, es decir, superior a 10, lo que podría ser una buena señal de un instrumento fuerte. Sin embargo, es inferior a 104, que, [según este documento](https://arxiv.org/abs/2010.05058), es un mejor umbral para las estadísticas F. Así que tal vez no sea tan relevante al final. Quién sabe.
+
+**Exclusión**
+
+Podemos comprobar la exclusión en parte mirando la relación entre los instrumentos y el resultado, o los salarios. Deberíamos ver alguna relación:
+
+```{r message=FALSE}
+ggplot(ed_real_long, aes(x = instrument_value, y = wage)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm") +
+  facet_wrap(~ instrument)
+```
+
+Y así es. Ahora sólo tenemos que argumentar que la única razón por la que existe una relación es que la educación de los padres sólo influye en los salarios a través de la educación. Buena suerte con eso.
+
+**Exogeneidad**
+
+El último paso es demostrar la exogeneidad: que la educación de los padres no está correlacionada con la educación o los salarios. Buena suerte con eso también.
+
+### 2SLS manualmente
+
+Ahora que quizás hemos encontrado algunos instrumentos adecuados, podemos utilizarlos en un modelo de mínimos cuadrados de dos etapas. Le mostraré cómo hacerlo a mano, sólo para ayudar con la intuición, pero luego lo haremos automáticamente con `iv_robust()`.
+
+Asumiendo que la educación de los padres es un buen instrumento, podemos usarlo para eliminar la parte endógena de la educación usando 2SLS. En la primera etapa, predecimos la educación utilizando nuestros instrumentos:
+
+```{r}
+first_stage <- lm(education ~ education_dad + education_mom, data = ed_real)
+```
+
+A continuación, podemos extraer la educación predicha y añadirla a nuestro conjunto de datos principal, cambiando el nombre de la variable `.fitted` por otro más útil:
+
+```{r}
+ed_real_with_predicted <- augment_columns(first_stage, ed_real) %>%
+  rename(education_hat = .fitted)
+```
+
+Por último, podemos utilizar la educación prevista para estimar el efecto exógeno de la educación en los salarios:
+
+```{r}
+second_stage <- lm(wage ~ education_hat,
+                   data = ed_real_with_predicted)
+tidy(second_stage)
+```
+
+El coeficiente de `education_hat` debería ser nuestro efecto real.
+
+### 2SLS en un solo paso
+
+De nuevo, en la vida real, no querrá hacer todo eso. Es tedioso y sus errores estándar son erróneos. Aquí se explica cómo hacerlo todo en un solo paso:
+
+```{r}
+model_2sls <- iv_robust(wage ~ education | education_dad + education_mom,
+                        data = ed_real)
+tidy(model_2sls)
+```
+
+El coeficiente para `education` es el mismo que encontramos en el proceso manual de 2SLS, pero ahora los errores son correctos.
+
+### Comparar resultados
+
+Comparemos todos los hallazgos e interpretemos los resultados.
+
+```{r}
+modelsummary(list("OLS" = model_naive, "2SLS (by hand)" = second_stage,
+                  "2SLS (automatic)" = model_2sls),
+             gof_omit = "IC|Log|Adj|p\\.value|statistic|se_type",
+             stars = TRUE) %>%
+  # Add a background color to rows 3 and 5
+  row_spec(c(3, 5), background = "#F5ABEA")
+```
+
+El efecto 2SLS es aproximadamente el doble y podría decirse que es más preciso, ya que ha eliminado la endogeneidad de la educación. Un año más de estudios supone un ingreso extra de 111,56 dólares al mes (en dólares de 1980).
+
+### Comprobación de instrumentos débiles
+
+El estadístico F en la primera etapa fue de 83,3, que es mayor que 10, pero no enorme. De nuevo, [este documento más reciente](https://arxiv.org/abs/2010.05058) argumenta que basarse en 10 como umbral no es bueno. Proporcionan una prueba nueva y más potente llamada procedimiento tF, pero nadie ha escrito una función en R para hacer eso todavía, así que no podemos usarla todavía.
+
+Sin embargo, podemos hacer un par de pruebas más para la fuerza del instrumento. En primer lugar, si incluye el argumento `diagnostics = TRUE` al ejecutar `iv_robust()`, puede obtener algunas estadísticas de diagnóstico adicionales. (Consulte [la sección "Details" de la documentación de `iv_robust`](https://www.rdocumentation.org/packages/estimatr/versions/0.26.0/topics/iv_robust#l_details) para obtener más detalles sobre lo que son).
+
+Volvamos a ejecutar el modelo 2SLS con `iv_robust` con los diagnósticos activados. Para ver los detalles del diagnóstico, no puede utilizar `tidy()` (ya que sólo muestra los coeficientes), por lo que tiene que utilizar `summary()`:
+
+```{r}
+model_2sls <- iv_robust(wage ~ education | education_dad + education_mom,
+                        data = ed_real, diagnostics = TRUE)
+summary(model_2sls)
+```
+
+El principal diagnóstico que nos interesa aquí es el primero: "Instrumentos débiles". Se trata de una versión un poco más sofisticada que la simple observación del estadístico F de la primera etapa. La hipótesis nula de esta prueba es que los instrumentos que hemos especificado son débiles, por lo que nos gustaría rechazar esa hipótesis nula. En este caso, el valor p es pequeño, por lo que podemos rechazar con seguridad la nula y decir que los instrumentos probablemente no son débiles. (En general, se desea una prueba de instrumentos débiles estadísticamente significativa).
+
+Otro enfoque para comprobar si los instrumentos son débiles es calcular algo llamado conjunto de confianza de Anderson-Rubin, que es esencialmente un intervalo de confianza del 95% para su coeficiente que muestra la estabilidad del coeficiente en función de lo débil o fuerte que sea el instrumento. Esta prueba se inventó como en 1949 y podría decirse que es más robusta que la comprobación de los estadísticos F, pero por alguna razón, *nadie la enseña ni la utiliza*. No está en ninguno de los libros de texto de esta clase, y es realmente raro. Incluso si buscas en Google "anderson rubin test weak instruments", sólo encontrarás un montón de apuntes de clases de econometría de lujo (como [p. 10 aquí](https://economics.yale.edu/sites/default/files/files/Workshops-Seminars/Econometrics/andrews1-051012.pdf), o [p. 4 aquí](https://www.ssc.wisc.edu/~xshi/econ715/Lecture_11_WeakIV.pdf), o [p. 4 aquí](https://ocw.mit.edu/courses/economics/14-384-time-series-analysis-fall-2013/lecture-notes/MIT14_384F13_lec7and8.pdf)).
+
+Además, la mayoría de los paquetes automáticos de R de 2SLS no proporcionan una forma fácil de hacer esta prueba. La única que he encontrado está en el paquete **AER**. Básicamente, cree un modelo 2SLS con `ivreg()` de AER y luego alimente ese modelo a la función `anderson.rubin.ci()` de la función **ivpack**. Esto no funciona con los modelos que se hacen con `iv_robust()` o cualquiera de los otros paquetes que hacen 2SLS sólo con `ivreg()` de AER. Es una molestia.
+
+```{r warning=FALSE, message=FALSE}
+library(AER)  # For ivreg()
+library(ivpack)  # For IV diagnostics like Anderson-Rubin causal effects
+
+# You have to include x = TRUE so that this works with diagnostic functions
+model <- ivreg(wage ~ education | education_dad + education_mom,
+               data = ed_real, x = TRUE)
+
+# AR 95% confidence interval
+anderson.rubin.ci(model)
+```
+
+Basándose en este intervalo de confianza, dada la fuerza (o debilidad) de los instrumentos, la estimación del IV podría ser tan baja como 75,9 y tan alta como 152, lo cual es un rango bastante grande alrededor del efecto \$112 que encontramos. Muy bien.
+
+No hay un umbral mágico que buscar en estos intervalos de confianza; lo que más le preocupa es la cantidad de variabilidad potencial que hay. Si estás bien con un efecto causal que podría estar entre 76 y 152, genial. Si quiere que ese rango sea más estrecho, encuentre algunos instrumentos mejores.
+
+
+## Educación, salarios y distancia a la universidad (variables de control) (datos reales)
+
+Para este último ejemplo, estimaremos el efecto de la educación en los salarios utilizando un instrumento diferente: la proximidad geográfica a las universidades. Estos datos proceden del estudio de David Card de 1995 en el que hizo lo mismo, y están disponibles en la biblioteca **wooldridge** como `card`. Puede encontrar una descripción de todas las variables [aquí](http://fmwww.bc.edu/ec-p/data/wooldridge/card.des); las utilizaremos:
+
+| Variable name | Description                                           |
+| ------------- | ----------------------------------------------------- |
+| `lwage`       | Annual wage (log form)                                |
+| `educ`        | Years of education                                    |
+| `nearc4`      | Living close to college (=1) or far from college (=0) |
+| `smsa`        | Living in metropolitan area (=1) or not (=0)          |
+| `exper`       | Years of experience                                   |
+| `expersq`     | Years of experience (squared term)                    |
+| `black`       | Black (=1), not black (=0)                            |
+| `south`       | Living in the south (=1) or not (=0)                  |
+
+```{r}
+card <- read_csv("data/card.csv")
+```
+
+Una vez más, Card quiere estimar el efecto de la educación sobre el salario. Pero para eliminar la endogeneidad que proviene de la capacidad, utiliza una variable instrumental diferente: **la proximidad a la universidad**.
+
+También utiliza variables de control para ayudar a explicar la variación adicional de los salarios: `smsa66 + exper + expersq + black + south66`.
+
+**NOTA IMPORTANTE**: Cuando se incluyen controles, [cada variable de control tiene que ir en *ambas etapas*](https://stats.stackexchange.com/a/177752/3025). Los únicos elementos de la primera etapa que no se trasladan a la segunda son los instrumentos; fíjese en que `nearc4` sólo está en la primera etapa, ya que es el instrumento, pero no está en la segunda. Los demás controles están en ambas etapas.
+
+Por lo tanto, estima un modelo en el que:
+
+**Primera etapa:**
+
+$$
+\widehat{\text{educ}} = \beta_0 + \beta_1\text{nearc4} + \beta_{2-6}\text{Control variables}
+$$
+
+**Segunda etapa:**
+
+$$
+\text{lwage} = \beta_0 + \beta_1 \widehat{\text{educ}} + \beta_{2-6}\text{Control variables}
+$$
+
+### Comprobar la validez del instrumento
+
+La tarjeta proporciona argumentos para apoyar cada una de las tres características principales de una buena variable instrumental:
+
+1. **Relevancia**: Las personas que viven cerca de una universidad de 4 años tienen un acceso más fácil a la educación a un coste menor (sin costes de desplazamiento y tiempo ni costes de alojamiento), por lo que tienen mayores incentivos para seguir estudiando.
+2. **Exclusión**: La proximidad a una universidad no tiene ningún efecto sobre sus ingresos anuales, a menos que decidan seguir estudiando gracias a la universidad cercana.
+3. **Exogeneidad**: La capacidad individual no depende de la proximidad a una universidad.
+
+Veamos si estos supuestos se mantienen:
+
+**Relevancia**
+
+Debe haber una fuerte relación entre el instrumento (distancia a la universidad) y la educación:
+
+```{r}
+first_stage <- lm(educ ~ nearc4 + smsa66 + exper + expersq + black + south66,
+                  data = card)
+tidy(first_stage)
+glance(first_stage)
+```
+
+Basado en este modelo de primera etapa, `nearc4` tiene una relación significativa con `educ`, y la estadística F conjunta del modelo es 449, que es definitivamente mayor que 10 y 104. Bien. Lo llamaremos relevante.
+
+**Exclusión**
+
+Para que la distancia a la universidad funcione como instrumento y cumpla la restricción de exclusión, tenemos que demostrar que la distancia a la universidad causa los salarios *sólo a través* de la obtención de más educación. Piense en otros posibles caminos entre vivir cerca de una universidad y el aumento de los salarios: podría haber otros caminos que no pasen por la educación. Buena suerte.
+
+**Exogeneidad**
+
+Para que la distancia a la universidad funcione como instrumento exógeno, tenemos que demostrar que ninguno de los factores de confusión no observados entre la educación y los ingresos está relacionado con la distancia. También buena suerte.
+
+### Estimación 2SLS
+
+Asumiendo que la distancia a la educación es un instrumento válido (seguro), podemos utilizarlo en un modelo 2SLS. Recuerde que las variables de control tienen que ir en ambas etapas, así que especifíquelas en consecuencia en la fórmula del modelo:
+
+```{r}
+model_2sls <- iv_robust(lwage ~ educ + smsa66 + exper + expersq + black + south66 |
+                          nearc4 + smsa66 + exper + expersq + black + south66,
+                        data = card, diagnostics = TRUE)
+tidy(model_2sls)
+```
+
+Genial. Basándonos en el coeficiente de `educ`, un año de educación *causa* un aumento del 15,7% en los salarios anuales, de media.
+
+¿Es eso una mejora respecto a un modelo ingenuo en el que no tenemos en cuenta ninguna endogeneidad?
+
+```{r}
+model_naive <- lm(lwage ~ educ + smsa66 + exper + expersq + black + south66,
+                  data = card)
+tidy(model_naive)
+```
+
+Sí. Sin eliminar la endogeneidad de la educación, un año adicional de educación sólo se asocia con un aumento del 7,6% de los salarios anuales, por término medio.
+
+### Comparar resultados
+
+Para divertirnos, podemos ver los resultados uno al lado del otro:
+
+```{r}
+modelsummary(list("OLS ingenuo" = model_naive, "2SLS" = model_2sls),
+             gof_omit = "IC|Log|Adj|p\\.value|statistic|se_type",
+             stars = TRUE) %>%
+  # Add a background color to row 3
+  row_spec(3, background = "#F5ABEA")
+```
+
+### Diagnóstico extra
+
+Por último, podemos comprobar si hay problemas de instrumentos débiles. El estadístico F que encontramos en la primera etapa era bastante grande, por lo que es una buena señal, pero podemos mirar el estadístico de instrumentos débiles de la primera etapa, así como el intervalo de confianza de Anderson-Rubin.
+
+Dado que incluimos `diagnostics = TRUE` en el modelo, podemos utilizar simplemente `summary()` para comprobar los diagnósticos de instrumentos débiles:
+
+```{r}
+summary(model_2sls)
+```
+
+El valor p de la prueba "Instrumentos débiles" es diminuto, lo que significa que podemos rechazar con seguridad la hipótesis nula de que el instrumento cercano a la universidad es débil. Muy bien.
+
+Para calcular los intervalos de confianza de Anderson-Rubin, tenemos que volver a ejecutar el modelo con la función `ivreg()` (ugh) y alimentar los resultados a `anderson.rubin.ci()`:
+
+```{r}
+model_again <- ivreg(lwage ~ educ + smsa66 + exper + expersq + black + south66 |
+                       nearc4 + smsa66 + exper + expersq + black + south66,
+                     data = card, x = TRUE)
+anderson.rubin.ci(model_again)
+```
+
+Uf. Es un intervalo bastante amplio, que va del 5,7% al 31,5%. Sigue siendo positivo, pero a veces podría ser bastante pequeño.
