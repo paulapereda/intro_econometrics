@@ -19,6 +19,7 @@ Para obtener información sobre los detalles del curso, consulte el [programa](h
 
 1. [Diferencias en Diferencias: introducción](https://github.com/paulapereda/econometria_I_21/blob/master/Slides/09_diferencias_en_diferencias/dd.Rmd) <br> [Slides (html)](https://dd-econometria-1.netlify.app/#1)
 2. [Diferencias en Diferencias](https://github.com/paulapereda/econometria_I_21/blob/master/Slides/09_diferencias_en_diferencias/dd.Rmd) <br> [Slides (html)](https://dd-econometria-1.netlify.app/#1)| [.Rmd](https://github.com/paulapereda/econometria_I_21/blob/master/Slides/08_endogeneidad/08_endogoneidad.Rmd) | [Taller (.html)](https://taller-dd-econometria-1.netlify.app/) 
+3. Regresión Discontinua <br> [Slides (html)](https://rd-intro-econometria-1.netlify.app/#1) | [Taller (.html)](https://taller-rd-econometria-1.netlify.app/) 
 
 <a name="myfootnote1">1</a>: Las slides usan el estilo de las slides del curso [EC421S19 de Ed Rubin]() y también uso contenido de sus slides para algunos de los talleres. 
 
